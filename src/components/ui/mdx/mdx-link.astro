@@ -1,0 +1,24 @@
+---
+export interface Props {
+  href: string;
+}
+
+const { href } = Astro.props;
+const isInternalLink = href && href.startsWith('/');
+---
+
+{
+  isInternalLink ?
+    <a
+      href={href}
+      class='mdx-link internal-link'>
+      <slot />
+    </a>
+  : <a
+      href={href}
+      class='mdx-link external-link'
+      target='_blank'
+      rel='noopener noreferrer'>
+      <slot />
+    </a>
+}

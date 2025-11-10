@@ -1,0 +1,13 @@
+---
+export interface Props {
+  [key: string]: any;
+}
+
+const { ...props } = Astro.props;
+---
+
+<li
+  class='mdx-list-item'
+  {...props}>
+  <slot />
+</li>
