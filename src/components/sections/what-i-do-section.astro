@@ -1,0 +1,57 @@
+---
+// 1. Import the new SkillCard component
+
+import SkillCard, { type Skill } from '@/components/sections/skill-card.astro'; // Import Skill type as well
+
+import { cn } from '@/shared/utils/classes';
+
+// Define the Props interface to accept a 'skills' array
+export interface Props {
+  skills: readonly Skill[];
+  class?: string;
+}
+
+// Destructure the skills from Astro.props
+const { skills, class: className = '' } = Astro.props;
+
+const sectionClasses = cn('what-i-do-section', className);
+---
+
+<section class={sectionClasses}>
+  <div class="skills-grid">
+    {
+      skills.map((skill) => {
+        return <SkillCard skill={skill} />;
+      })
+    }
+  </div>
+</section>
+
+<style>
+  .what-i-do-section {
+    margin-top: 2.5rem;
+    /* Grid styles are applied to the inner skills-grid div below */
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    justify-content: space-between;
+    column-gap: 1.25rem;
+    row-gap: 2.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .skills-grid {
+      /* Uses the same grid layout as featured-posts */
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .skills-grid {
+      /* Adapts to 3 columns on larger screens */
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

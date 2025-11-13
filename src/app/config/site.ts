@@ -26,11 +26,11 @@ export const siteConfig = {
     dailydev: 'https://app.daily.dev/squads/jsdevelopment'
   },
   postsPerPage: 15,
-  mainHeadTitle: 'Welcome to the JSDev Astro Theme',
+  mainHeadTitle: 'Full-Stack Supply Chain Optimization',
   mainHeadHeadingTwo:
-    'A modern, fast, and accessible Astro blog template for JavaScript developers',
+    'Manuel Hernandez Zemljic: Data-Driven Systems for Manufacturing and SCM',
   mainHeadDescription:
-    'This demo site showcases the layout, features, and content structure of the JSDev Astro Theme — ideal for technical blogs, guides, and developer portfolios.',
+    'I implement continuous improvement through system automation, advanced data analytics (ML/DL), and full-stack application development, specializing in manufacturing and supply chain operations (ERP, WMS, KPI systems).',
   icons: {
     chevronLeft: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>`,
     chevronRight: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`,
@@ -39,5 +39,24 @@ export const siteConfig = {
   footerTextParagraphOne:
     'This is a demonstration site built with the JSDev Astro Theme — a modern template for building fast, SEO-friendly blogs for JavaScript and web developers.',
   footerTextParagraphTwo:
-    'All content here is for preview purposes. Follow us on social media to stay connected with theme updates, coding tips, and news from the JavaScript community. 🚀'
+    'All content here is for preview purposes. Follow us on social media to stay connected with theme updates, coding tips, and news from the JavaScript community. 🚀',
+  skillsTitle: "What I Do",
+  skillsHeader: "I design and optimize end-to-end manufacturing and supply chain systems by bridging Industrial Engineering, Data Science, and Full-Stack Development. My expertise spans:",
+  skills: [
+    {
+      title: 'Industrial & Supply Chain Engineering',
+      description: 'Process modeling, operations research, KPI development, and physical system design.',
+      icon: '/icons/WhatIDo/factory.svg'
+    },
+    {
+      title: 'Data Science & Analytics',
+      description: 'Machine Learning (Python, R, PyTorch), SQL (MSSQL, HanaSQL), data visualization (Tableau), and statistical analysis.',
+      icon: '/icons/WhatIDo/brain.svg'
+    },
+    {
+      title: 'Full-Stack Development',
+      description: 'Java (Spring Boot), React, API Design, Databases (MySQL), CI/CD, and Cloud (AWS, Docker).',
+      icon: '/icons/WhatIDo/coding.svg'
+    },
+  ]
 } as const;
