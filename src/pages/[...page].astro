@@ -86,6 +86,7 @@ const title =
     Post List: It lists the remaining recentPosts.
     Pagination Navigation: It renders the Pagination component (Next/Previous buttons) if there are multiple pages.
  */
+const useBorderlessTitle = false;
 ---
 
 
@@ -117,6 +118,7 @@ const title =
             <HeadingBlock
               title={siteConfig.projectsTitle}
               description={siteConfig.projectsHeader}
+              noBorder={useBorderlessTitle}
             />
         )}
 

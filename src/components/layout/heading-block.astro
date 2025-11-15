@@ -4,12 +4,15 @@ type Props = {
   description: string;
   headingTwo?: string;
   class?: string;
+  noBorder?: boolean;
 };
 
-const { title, description, headingTwo, class: className = '' } = Astro.props;
+const { title, description, headingTwo, class: className = '', noBorder = false } = Astro.props;
+
+const headerClasses = `heading-block ${noBorder ? 'no-border-style' : ''} ${className}`;
 ---
 
-<header class={`heading-block ${className}`}>
+<header class={headerClasses}>
   <h1>{title}</h1>
   {description && <p>{description}</p>}
   {headingTwo && <h2>{headingTwo}</h2>}
@@ -25,6 +28,14 @@ const { title, description, headingTwo, class: className = '' } = Astro.props;
     padding: 0.5rem 1.5rem;
     border-radius: var(--radius);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Added: Styles for the variation without a border */
+  .no-border-style {
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+
   }
 
   .heading-block h1 {
