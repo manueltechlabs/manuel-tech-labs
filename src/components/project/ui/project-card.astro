@@ -1,0 +1,163 @@
+---
+import { Picture } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Badge from '@/components/base/badge.astro';
+import Card from '@/components/base/card.astro';
+import { Fragment } from 'astro/jsx-runtime';
+
+import { formatDate } from '@/shared/utils/time';
+
+type Props = {
+  project: CollectionEntry<'projects'>;
+  class?: string;
+};
+
+const { project } = Astro.props;
+
+const truncatedDesc =
+  project.data.desc.length > 120 ? project.data.desc.substring(0, 120) + '...' : project.data.desc;
+---
+
+<Card class='project-card'>
+  <Fragment slot='header'>
+    <div class='project-image-container'>
+      {
+        project.data.image && (
+          <Picture
+            src={project.data.image}
+            alt={project.data.title}
+            title={project.data.title}
+            class='project-image'
+            width={400}
+            height={250}
+            loading='lazy'
+            decoding='async'
+            formats={['avif', 'webp']}
+            quality={80}
+            sizes='(max-width: 768px) 100vw, 400px'
+          />
+        )
+      }
+    </div>
+  </Fragment>
+
+  <Fragment slot='content'>
+    <div class='project-meta'>
+      <span class='project-date'>{formatDate(project.data.date)}</span>
+      <Badge title={project.data.category}>
+        {project.data.category}
+      </Badge>
+    </div>
+    <a
+      href={`/${project.data.permalink}/`}
+      title={project.data.title}
+      class='project-title-link'>
+      <h3 class='project-title'>
+        {project.data.title}
+      </h3>
+    </a>
+    <p class='project-description'>
+      {truncatedDesc}
+    </p>
+  </Fragment>
+</Card>
+
+<style>
+  .project-card {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--border-radius);
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--card));
+  }
+
+  .project-image-container {
+    display: none;
+    padding: 0;
+  }
+
+  @media (min-width: 768px) {
+    .project-image-container {
+      display: block;
+    }
+  }
+
+  .project-image {
+    height: 120px;
+    max-height: 120px;
+    width: 100%;
+    border-radius: var(--border-radius);
+    object-fit: cover;
+  }
+
+  @media (min-width: 768px) {
+    .project-image {
+      height: 240px;
+      max-height: none;
+    }
+  }
+
+  .project-meta {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+  }
+
+  @media (min-width: 768px) {
+    .project-meta {
+      padding: 0;
+    }
+  }
+
+  .project-date {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--muted-foreground, #64748b);
+  }
+  .project-title-link {
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .project-title {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+    height: 100%;
+    font-family: var(--font-serif);
+    transition: text-decoration 0.2s;
+    font-weight: 400;
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+    letter-spacing: -0.01562em;
+  }
+
+  .project-title:hover {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 768px) {
+    .project-title {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .project-title {
+      -webkit-line-clamp: 2;
+    }
+  }
+
+  .project-description {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: hsl(var(--muted-foreground));
+    margin-bottom: 0;
+  }
+</style>

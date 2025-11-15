@@ -12,6 +12,7 @@ import HeadingBlock from '@/components/layout/heading-block.astro';
 import Pagination from '@/components/layout/pagination.astro';
 import WhatIDoSection from '@/components/sections/what-i-do-section.astro';
 import FeaturedPosts from '@/components/post/featured-posts.astro';
+import FeaturedProjects from '@/components/project/featured-projects.astro';
 import Posts from '@/components/post/posts.astro';
 
 import { siteConfig } from '@/app/config/site';
@@ -22,7 +23,21 @@ const sortedPosts = allPosts.sort((a, b) => {
   return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
 });
 const numberOfPages = Math.ceil(sortedPosts.length / siteConfig.postsPerPage);
+
+// Read Skills data
 const mySkills = siteConfig.skills;
+
+// Read projects data
+const allProjects = await getCollection('projects');
+
+// Filter projects that have the 'featured_at' field defined in their frontmatter
+const featuredProjectsList = allProjects.filter(project => project.data.featured_at);
+
+// Sort the filtered projects by the featured date (newest first)
+featuredProjectsList.sort((a, b) => new Date(b.data.featured_at).getTime() - new Date(a.data.featured_at).getTime());
+
+// Slice the list to get only the top 3
+const myProjects = featuredProjectsList.slice(0, 3);
 
 /**
   Dynamic Routing with getStaticPaths
@@ -88,17 +103,25 @@ const title =
         </h1>
     }
     {
-      page.currentPage === 1 ?
+      page.currentPage === 1 &&
         <HeadingBlock
           title={siteConfig.skillsTitle}
           {/*headingTwo={siteConfig.mainHeadHeadingTwo}*/}
+          headingTwo={siteConfig.skillsHeaderTwo}
           description={siteConfig.skillsHeader}
         />
-      : <h1 class='page-heading'>
-          {siteConfig.shortTitle} Page {page.currentPage}
-        </h1>
     }
     {page.currentPage === 1 && <WhatIDoSection skills={mySkills}/>}
+
+    {page.currentPage === 1 && (
+            <HeadingBlock
+              title={siteConfig.projectsTitle}
+              description={siteConfig.projectsHeader}
+            />
+        )}
+
+    {page.currentPage === 1 && <FeaturedProjects projects={myProjects}/>}
+
     {page.currentPage === 1 && <FeaturedPosts posts={featuredPosts} />}
     {recentPosts && <Posts posts={page.currentPage === 1 ? recentPosts : page.data} />}
     {

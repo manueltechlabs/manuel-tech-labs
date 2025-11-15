@@ -1,6 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 
 import { glob } from 'astro/loaders';
+import { X } from '@lucide/astro';
 
 const posts = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/posts/' }),
@@ -24,8 +25,30 @@ const posts = defineCollection({
     }),
 });
 
+const projects = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/projects/' }),
+  schema: ({ image }) => z.object({
+    title: z.string().max(65, { message: 'Title cannot be longer than 65 characters', }),
+    desc: z.string().max(165, { message: 'Description cannot be longer than 165 characters', }),
+    // project-specific fields
+    client: z.string().optional(),
+    url: z.string().optional(), // Optional URL to the live project
+    git: z.string().optional(),
+    // Categories for broader filtering
+    category: z.string(),
+    // Tags for granular filtering
+    tags: z.array(z.string()).default([]),
+    date: z.date(),
+    image: image(),
+    permalink: z.string(),
+    slug: z.string(),
+    isDraft: z.boolean().optional(),
+    featured_at: z.date(),
+  }),
+});
+
 
 
 export const collections = {
-  posts,
+  posts, projects,
 };

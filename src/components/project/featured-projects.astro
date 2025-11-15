@@ -1,0 +1,47 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+import { cn } from '@/shared/utils/classes';
+
+import ProjectCard from './ui/project-card.astro';
+
+export interface Props {
+  projects?: CollectionEntry<'projects'>[];
+  class?: string;
+}
+
+const { projects = [], class: className = '' } = Astro.props;
+
+const sectionClasses = cn('featured-projects', className);
+---
+
+<section class={sectionClasses}>
+  {
+    projects.map((project, idx) => {
+      return <ProjectCard project={project} />;
+    })
+  }
+</section>
+
+<style>
+  .featured-projects {
+    margin-top: 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    justify-content: space-between;
+    column-gap: 1.25rem;
+    row-gap: 2.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .featured-projects {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .featured-projects {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

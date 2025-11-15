@@ -41,7 +41,8 @@ export const siteConfig = {
   footerTextParagraphTwo:
     'All content here is for preview purposes. Follow us on social media to stay connected with theme updates, coding tips, and news from the JavaScript community. 🚀',
   skillsTitle: "What I Do",
-  skillsHeader: "I design and optimize end-to-end manufacturing and supply chain systems by bridging Industrial Engineering, Data Science, and Full-Stack Development. My expertise spans:",
+  skillsHeader: "I design and optimize end-to-end manufacturing and supply chain systems by bridging Industrial Engineering, Data Science, and Full-Stack Development.",
+  skillsHeaderTwo: "My expertise spans:",
   skills: [
     {
       title: 'Industrial & Supply Chain Engineering',
@@ -58,5 +59,7 @@ export const siteConfig = {
       description: 'Java (Spring Boot), React, API Design, Databases (MySQL), CI/CD, and Cloud (AWS, Docker).',
       icon: '/icons/WhatIDo/coding.svg'
     },
-  ]
+  ],
+  projectsTitle: 'Featured Projects:',
+  projectsHeader: ''
 } as const;
