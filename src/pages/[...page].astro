@@ -19,10 +19,20 @@ import { siteConfig } from '@/app/config/site';
 import BaseLayout from '@/app/layouts/base-layout.astro';
 
 const allPosts = await getCollection('posts', ({ data }) => !data.isDraft);
+
 const sortedPosts = allPosts.sort((a, b) => {
   return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
 });
+
 const numberOfPages = Math.ceil(sortedPosts.length / siteConfig.postsPerPage);
+
+// get last 3 featured posts:
+
+// Filter projects that have the 'featured_at' field defined in their frontmatter
+const featuredPostList = sortedPosts.filter(project => project.data.featuredAt);
+
+// Slice the list to get only the top 3
+const myFeatPosts = featuredPostList.slice(0, 3);
 
 // Read Skills data
 const mySkills = siteConfig.skills;
@@ -31,10 +41,10 @@ const mySkills = siteConfig.skills;
 const allProjects = await getCollection('projects');
 
 // Filter projects that have the 'featured_at' field defined in their frontmatter
-const featuredProjectsList = allProjects.filter(project => project.data.featured_at);
+const featuredProjectsList = allProjects.filter(project => project.data.featuredAt);
 
 // Sort the filtered projects by the featured date (newest first)
-featuredProjectsList.sort((a, b) => new Date(b.data.featured_at).getTime() - new Date(a.data.featured_at).getTime());
+featuredProjectsList.sort((a, b) => new Date(b.data.featuredAt).getTime() - new Date(a.data.featuredAt).getTime());
 
 // Slice the list to get only the top 3
 const myProjects = featuredProjectsList.slice(0, 3);
@@ -65,14 +75,15 @@ export const getStaticPaths = (async ({ paginate }) => {
 
 /**
   Data Processing
-  Astro.props.page: This object is automatically provided by the paginate function. It contains the data (posts) specific to the current page being built (e.g., the first 10 posts for the home page, the next 10 for page 2).
+  Astro.props.page: This object is automatically provided by the paginate function. It contains the data (posts) specific
+  to the current page being built (e.g., the first 10 posts for the home page, the next 10 for page 2).
   It slices the data to separate the first three posts into a "featured" section for the home page.
  */
 
 const { page } = Astro.props;
 
 // Use last 3 posts as featured
-const featuredPosts = page.data.slice(0, 3);
+
 const recentPosts = page.data.slice(3, page.data.length);
 
 const title =
@@ -107,25 +118,49 @@ const useBorderlessTitle = false;
       page.currentPage === 1 &&
         <HeadingBlock
           title={siteConfig.skillsTitle}
-          {/*headingTwo={siteConfig.mainHeadHeadingTwo}*/}
-          headingTwo={siteConfig.skillsHeaderTwo}
           description={siteConfig.skillsHeader}
         />
     }
-    {page.currentPage === 1 && <WhatIDoSection skills={mySkills}/>}
-
-    {page.currentPage === 1 && (
-            <HeadingBlock
-              title={siteConfig.projectsTitle}
-              description={siteConfig.projectsHeader}
-              noBorder={useBorderlessTitle}
-            />
-        )}
-
-    {page.currentPage === 1 && <FeaturedProjects projects={myProjects}/>}
-
-    {page.currentPage === 1 && <FeaturedPosts posts={featuredPosts} />}
-    {recentPosts && <Posts posts={page.currentPage === 1 ? recentPosts : page.data} />}
+    {
+      page.currentPage === 1 &&
+        <HeadingBlock
+          headingTwo={siteConfig.skillsHeaderTwo}
+        />
+    }
+    {
+      page.currentPage === 1 && <WhatIDoSection skills={mySkills}/>
+    }
+    {
+      page.currentPage === 1 && (
+        <HeadingBlock
+          title={siteConfig.projectsTitle}
+          noBorder={useBorderlessTitle}
+        />
+      )
+    }
+    {
+      page.currentPage === 1 && <FeaturedProjects projects={myProjects}/>
+    }
+    {
+      page.currentPage === 1 && (
+        <HeadingBlock
+          title={siteConfig.featuredPostsTile}
+        />
+      )
+    }
+    {
+      page.currentPage === 1 && <FeaturedPosts posts={myFeatPosts} />
+    }
+    {
+      page.currentPage === 1 && (
+        <HeadingBlock
+          title={siteConfig.lastPostsTile}
+        />
+      )
+    }
+    {
+      <Posts posts={page.data} />
+    }
     {
       numberOfPages > 1 && (
         <Pagination

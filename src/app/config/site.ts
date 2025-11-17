@@ -61,5 +61,6 @@ export const siteConfig = {
     },
   ],
   projectsTitle: 'Featured Projects:',
-  projectsHeader: ''
+  featuredPostsTile: 'Featured Posts:',
+  lastPostsTile: 'Last Posts:',
 } as const;

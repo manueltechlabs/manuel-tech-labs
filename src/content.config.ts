@@ -22,6 +22,7 @@ const posts = defineCollection({
       permalink: z.string(),
       slug: z.string(),
       isDraft: z.boolean().optional(),
+      featuredAt: z.date().optional(),
     }),
 });
 
@@ -43,7 +44,7 @@ const projects = defineCollection({
     permalink: z.string(),
     slug: z.string(),
     isDraft: z.boolean().optional(),
-    featured_at: z.date(),
+    featuredAt: z.date().optional(),
   }),
 });
 
