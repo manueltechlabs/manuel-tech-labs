@@ -47,19 +47,19 @@ export const siteConfig = {
     {
       title: 'Industrial & Supply Chain Engineering',
       description: 'Process modeling, operations research, KPI development, and physical system design.',
-      icon: '/icons/WhatIDo/factory.svg',
+      icon: '/icons/WhatIDo/settings-cogwheel-svgrepo-com.svg',
 
     },
     {
       title: 'Data Science & Analytics',
       description: 'Machine Learning (Python, R, PyTorch), SQL (MSSQL, HanaSQL), data visualization (Tableau), and statistical analysis.',
-      icon: '/icons/WhatIDo/brain.svg',
+      icon: '/icons/WhatIDo/brain-svgrepo-com.svg',
 
     },
     {
       title: 'Full-Stack Development',
       description: 'Java (Spring Boot), React, API Design, Databases (MySQL), CI/CD, and Cloud (AWS, Docker).',
-      icon: '/icons/WhatIDo/coding.svg',
+      icon: '/icons/WhatIDo/code-svgrepo-com.svg',
 
     },
   ],
