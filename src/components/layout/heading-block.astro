@@ -1,20 +1,23 @@
 ---
+import { Check } from '@lucide/astro';
 type Props = {
   title?: string;
-  description?: string;
+  descriptionItems?: string[];
+  descriptionList?: string[];
   headingTwo?: string;
   class?: string;
   noBorder?: boolean;
 };
 
-const { title, description, headingTwo, class: className = '', noBorder = false } = Astro.props;
+const { title, descriptionItems, headingTwo, class: className = '', noBorder = false, descriptionList } = Astro.props;
 
 const headerClasses = `heading-block ${noBorder ? 'no-border-style' : ''} ${className}`;
 ---
 
 <header class={headerClasses}>
   <h1>{title}</h1>
-  {description && <p>{description}</p>}
+  {descriptionItems?.map(item => <p>{item}</p>) }
+  <ul>{descriptionList?.map(item => <li><Check size="16" color="hsl(var(--primary))" class="icon" />{item}</li>)}</ul>
   {headingTwo && <h2>{headingTwo}</h2>}
 </header>
 
@@ -61,6 +64,21 @@ const headerClasses = `heading-block ${noBorder ? 'no-border-style' : ''} ${clas
     font-size: 1.25rem;
     margin: 0;
   }
+  .heading-block ul {
+  margin-top: 1.25rem;
+  list-style: none;
+  padding-left: 0;
+}
+
+.heading-block li {
+  margin: 0.5rem 0rem;
+  line-height: 1.6;
+  display: flex;
+  align-items: center;
+}
+.heading-block .icon {
+  margin-right: 0.5rem;
+}
 
   @media (min-width: 768px) {
     .heading-block h2 {

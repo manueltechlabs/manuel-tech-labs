@@ -32,14 +32,21 @@ const sectionClasses = cn('what-i-do-section', className);
     margin-top: 2.5rem;
     /* Grid styles are applied to the inner skills-grid div below */
   }
-
+/*
   .skills-grid {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
     justify-content: space-between;
     column-gap: 1.25rem;
     row-gap: 2.5rem;
-  }
+  }*/
+.skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 1.25rem;
+}
 
   @media (min-width: 768px) {
     .skills-grid {

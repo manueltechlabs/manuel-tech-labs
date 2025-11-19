@@ -1,0 +1,121 @@
+---
+import BaseLayout from '@/app/layouts/base-layout.astro';
+
+import { Server, Code, Database, Brain, Cloud } from '@lucide/astro';
+
+const title = 'About Me';
+const description =
+  "";
+---
+
+<BaseLayout
+  title={title}
+  description={description}>
+  <main class='main mt-10'>
+    <h1 class='post-title'>About Me</h1>
+    <p class='intro-text'>
+      Welcome to my digital lab! I'm a software developer who builds robust, scalable applications. My journey from Industrial Engineering and Data Science to Java development gives me a unique perspective: I don't just write code—I build solutions that solve core business problems.
+    </p>
+    <p class="intro-text">
+      My goal is to translate complex operational needs into clean, efficient, and maintainable software.
+    </p>
+    <h2 class="post-title">
+      My Journey: From Process to Code
+    </h2>
+    <p class="intro-text">
+      My career began in Industrial Engineering, where I optimized supply chains and manufacturing processes using methodologies like Kaizen. I soon discovered that the biggest improvements came from better data and systems. This led me to teach myself SQL and web development, where I spent several years building high-impact reporting and BI solutions.
+    </p>
+    <p class="intro-text">
+      Key Achievement: I managed a full-scale reporting system migration from a legacy ERP to SAP B1, rebuilding all company reports using SQL and Crystal Reports and migrating KPI systems from MSSQL to HanaSQL.
+    </p>
+    <h2 class="post-title">
+      Deepening the Tech Stack
+    </h2>
+    <p class="intro-text">
+      To build more sophisticated solutions, I pursued a Master's in Data Science, mastering Python, R, and machine learning. This academic rigor, combined with practical experience, allows me to understand the entire data lifecycle, from extraction and analysis to model deployment.
+    </p>
+    <p class="intro-text">
+      Driven to move from analyzing systems to building them, I immersed myself in full-stack Java development.
+    </p>
+    <h2 class="post-title">My Technical Toolkit</h2>
+<div class="toolkit-container">
+  <div class="icon-row">
+    <Server />
+    <p class="intro-text"><strong>Back-End:</strong> Java, Spring Boot, Spring Security, REST APIs</p>
+  </div>
+  <div class="icon-row">
+    <Code />
+    <p class="intro-text"><strong>Front-End:</strong> React, JavaScript, HTML, CSS</p>
+  </div>
+  <div class="icon-row">
+    <Database />
+    <p class="intro-text"><strong>Databases:</strong> SQL (MSSQL, PostgreSQL, HanaSQL), Database Design</p>
+  </div>
+  <div class="icon-row">
+    <Brain />
+    <p class="intro-text"><strong>Data Science:</strong> Python (Pandas, Scikit-learn), R, Machine Learning, Tableau</p>
+  </div>
+  <div class="icon-row">
+    <Cloud />
+    <p class="intro-text"><strong>DevOps & Cloud:</strong> AWS, Docker, Git, CI/CD, Automated Testing</p>
+  </div>
+</div>
+    <h2 class="post-title">
+      What I'm Working On Now
+    </h2>
+    <p class="intro-text">
+      I'm passionate about continuous learning and building practical tools. My current projects include:
+    </p>
+    <ul>
+      <li>
+        Developing a full-featured Warehouse Management System (WMS) using Spring Boot, integrating BI and forecasting.
+      </li>
+      <li>
+        Implementing robust automated testing and CI/CD pipelines for my personal projects.
+      </li>
+      <li>
+        Sharing my learnings on this blog.
+      </li>
+    </ul>
+    <p class="intro-text">
+      Let's Build Something Great
+    </p>
+    <p class="intro-text">
+      I am currently seeking a Java Developer role where I can leverage my unique blend of software engineering, data analysis, and process optimization skills. If you're looking for a developer who understands the business logic behind the code, let's connect.
+    </p>
+  </main>
+</BaseLayout>
+
+<style>
+  .intro-text {
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Tech Stack section */
+
+  .toolkit-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .icon-row {
+    display: flex;
+    align-items: center;
+  }
+  .icon-row svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.75rem;
+    color: #4a5568; /* A dark gray color */
+    display: inline-flex; /* Ensures the SVG bahaves like an inline element */
+  }
+  .intro-text {
+    margin: 0;
+    font-size: 1rem;
+  }
+  .post-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+  }
+</style>
