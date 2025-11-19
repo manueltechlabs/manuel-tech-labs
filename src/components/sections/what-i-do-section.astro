@@ -32,33 +32,23 @@ const sectionClasses = cn('what-i-do-section', className);
     margin-top: 2.5rem;
     /* Grid styles are applied to the inner skills-grid div below */
   }
-/*
-  .skills-grid {
-    display: grid;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    justify-content: space-between;
-    column-gap: 1.25rem;
-    row-gap: 2.5rem;
-  }*/
-.skills-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: stretch;
-  gap: 1.25rem;
-}
 
-  @media (min-width: 768px) {
-    .skills-grid {
-      /* Uses the same grid layout as featured-posts */
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  .skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 1.25rem;
+    padding: 1rem 0;
   }
 
-  @media (min-width: 1024px) {
+
+
+  /* Mobile: single column */
+  @media (max-width: 768px) {
     .skills-grid {
-      /* Adapts to 3 columns on larger screens */
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      flex-direction: column;
+      align-items: center;
     }
   }
 </style>

@@ -25,16 +25,6 @@ const { skill } = Astro.props;
 </Card>
 
 <style>
-  /*
-  .skill-card {
-    
-    border: 1px solid hsl(var(--border));
-    background-color: hsl(var(--card));
-    padding: 1.5rem;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }*/
   
 .skill-card {
   flex: 0 0 calc(33.33% - 1.25rem);
@@ -44,6 +34,15 @@ const { skill } = Astro.props;
   border: 1px solid hsl(var(--border));
   background-color: hsl(var(--card));
   padding: 0.5rem 1.5rem;
+}
+
+/* Mobile: single column */
+@media (max-width: 768px) {
+
+  .skill-card {
+    flex: 0 0 100%;
+    max-width: 300px;
+  }
 }
 
   .skill-icon {
