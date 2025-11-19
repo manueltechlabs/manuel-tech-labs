@@ -15,9 +15,13 @@ const headerClasses = `heading-block ${noBorder ? 'no-border-style' : ''} ${clas
 ---
 
 <header class={headerClasses}>
-  <h1>{title}</h1>
+  {title && (<h1>{title}</h1>)}
   {descriptionItems?.map(item => <p>{item}</p>) }
-  <ul>{descriptionList?.map(item => <li><Check size="16" color="hsl(var(--primary))" class="icon" />{item}</li>)}</ul>
+  {descriptionList &&  (
+    <ul>
+      {descriptionList.map(item => <li><Check size="16" color="hsl(var(--primary))" class="icon" />{item}</li>)}
+    </ul>
+  )} 
   {headingTwo && <h2>{headingTwo}</h2>}
 </header>
 
