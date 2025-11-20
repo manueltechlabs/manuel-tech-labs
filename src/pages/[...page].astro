@@ -3,8 +3,7 @@
   Home page
     This file manages the main list of posts for the website, handling the home page and any subsequent archive pages using Astro's dynamic routing and pagination features.
     In Astro, files in the src/pages/ directory use file-based routing. The square brackets [...] denote a "rest parameter" in a dynamic route. 
-
- */
+  */
 import type { GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
 import Button from '@/components/base/button.astro';
@@ -60,6 +59,24 @@ const myProjects = featuredProjectsList.slice(0, 3);
     ...and so on.
   The [...] in the filename allows it to match all of these dynamically generated paths.
  */
+/*
+getStaticPaths returns data that Astro uses to generate pages, and Astro automatically injects the result into Astro.props as the page property.
+When paginate(...) is returned from getStaticPaths, Astro generates:
+One route per page (e.g., /, /2, /3)
+Each route gets a page object containing:
+page.data: the posts for that page
+page.url.next, page.url.prev: navigation
+page.currentPage, etc.
+This page object is automatically passed to Astro.props in the component. page is a property within Astro.props, not Astro.props itself.
+page is a reserved prop name for pagination, so page in const { page } = Astro.props; is not arbitrary — it is automatically provided by Astro when using paginate() in getStaticPaths.
+So this:
+const { page } = Astro.props;
+is required and fixed.
+However, you can rename it after destructuring:
+const { page: paginatedData } = Astro.props;
+// Now use `paginatedData.data`, `paginatedData.url.next`, etc.
+But the original property name in Astro.props is always page.
+*/
 export const getStaticPaths = (async ({ paginate }) => {
   // data
   const allPosts = await getCollection('posts', ({ data }) => !data.isDraft);
