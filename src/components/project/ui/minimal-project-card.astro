@@ -5,28 +5,28 @@ import Badge from '@/components/base/badge.astro';
 import { formatDate } from '@/shared/utils/time';
 
 export interface Props {
-  post: CollectionEntry<'posts'>;
+  project: CollectionEntry<'projects'>;
 }
 
-const { post } = Astro.props;
+const { project } = Astro.props;
 
-const formattedDate = formatDate(post.data.date);
+const formattedDate = formatDate(project.data.date);
 const truncatedDesc =
-  post.data.desc.length > 130 ? post.data.desc.substring(0, 130) + '...' : post.data.desc;
+  project.data.desc.length > 130 ? project.data.desc.substring(0, 130) + '...' : project.data.desc;
 ---
 
 <article class='card'>
   <div class='meta-section'>
-    <Badge title={post.data.category}>{post.data.category}</Badge>
+    <Badge title={project.data.category}>{project.data.category}</Badge>
     <span class='date'>{formattedDate}</span>
   </div>
 
   <div class='content-section'>
     <a
-      title={post.data.title}
-      href={`/${post.data.permalink}/`}
+      title={project.data.title}
+      href={`/projects/${project.data.permalink}/`}
       class='title-link'>
-      <h3 class='title'>{post.data.title}</h3>
+      <h3 class='title'>{project.data.title}</h3>
     </a>
     <p class='description'>{truncatedDesc}</p>
   </div>

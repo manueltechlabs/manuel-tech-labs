@@ -1,0 +1,143 @@
+---
+import { getCollection } from 'astro:content';
+import Breadcrumbs from '@/components/base/breadcrumbs.astro';
+import CategoryHead from '@/components/categories/ui/category-head.astro';
+import Pagination from '@/components/layout/pagination.astro';
+import Projects from '@/components/project/projects.astro';
+
+import { siteConfig } from '@/app/config/site';
+import BaseLayout from '@/app/layouts/base-layout.astro';
+import { generateCategoryBreadcrumbs } from '@/shared/helpers/breadcrumbs.helpers';
+
+export const getStaticPaths = async ({ paginate }) => {
+  try {
+    const allProjects = await getCollection('projects', ({ data }) => !data.isDraft);
+
+    if (allProjects.length === 0) {
+      console.warn('⚠️ No projects found!');
+      return [];
+    }
+
+    const projectsByCategory = allProjects.reduce((acc, project) => {
+      const categories =
+        Array.isArray(project.data.category) ? project.data.category
+        : project.data.category ? [project.data.category]
+        : [];
+
+      categories.forEach(category => {
+        if (category && typeof category === 'string') {
+          const categorySlug = category.toLowerCase().replace(/\s+/g, '-');
+          if (!acc[categorySlug]) {
+            acc[categorySlug] = {
+              name: category,
+              projects: [],
+            };
+          }
+          acc[categorySlug].projects.push(project);
+        }
+      });
+
+      return acc;
+    }, {});
+
+    if (Object.keys(projectsByCategory).length === 0) {
+      console.warn('⚠️ No categories found!');
+      return [];
+    }
+
+    Object.keys(projectsByCategory).forEach(categorySlug => {
+      projectsByCategory[categorySlug].projects.sort((a, b) => {
+        const dateA = new Date(a.data.date);
+        const dateB = new Date(b.data.date);
+        return dateB.getTime() - dateA.getTime();
+      });
+    });
+
+    const allPaths = [];
+
+    for (const [categorySlug, categoryData] of Object.entries(projectsByCategory)) {
+      const pages = paginate(categoryData.projects, {
+        params: { category: categorySlug },
+        pageSize: siteConfig.projectsPerPage,
+        props: {
+          categoryName: categoryData.name,
+          totalProjects: categoryData.projects.length,
+        },
+      });
+
+      allPaths.push(...pages);
+    }
+
+    return allPaths;
+  } catch (error) {
+    console.error('❌ Error in getStaticPaths:', error);
+    throw error;
+  }
+};
+
+const { category } = Astro.params;
+const page = Astro.props.page;
+const { categoryName, totalProjects } = Astro.props;
+
+const numberOfPages = Math.ceil(totalProjects / siteConfig.projectsPerPage);
+const currentPage = page.currentPage;
+
+if (!category || !page || !categoryName) {
+  return new Response(null, { status: 404, statusText: 'Not Found' });
+}
+
+const breadcrumbItems = generateCategoryBreadcrumbs(
+  categoryName,
+  category,
+  currentPage > 1 ? currentPage : undefined
+);
+
+const pageTitle =
+  currentPage === 1 ?
+    `${categoryName} Articles | JSdev`
+  : `${categoryName} Articles - Page ${currentPage} | JSdev`;
+
+const pageDescription = `Explore ${totalProjects} ${categoryName.toLowerCase()} posts and tutorials. ${
+  currentPage > 1 ?
+    `Page ${currentPage} of ${page.lastPage}.`
+  : 'Learn from our comprehensive guides and examples.'
+}`;
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}>
+  <main class='main'>
+    {
+      currentPage > 1 && (
+        <Breadcrumbs
+          items={breadcrumbItems}
+          class='mt-10'
+        />
+      )
+    }
+
+    {
+      currentPage === 1 ?
+        <CategoryHead
+          categoryName={categoryName}
+          currentPage={currentPage}
+          totalProjects={totalProjects}
+          class='mt-10'
+        />
+      : <h1>
+          {categoryName} Page {page.currentPage}
+        </h1>
+    }
+    <Projects projects={page.data} />
+    {
+      numberOfPages > 1 && (
+        <Pagination
+          numPages={page.lastPage}
+          currentPage={currentPage}
+          slug={category}
+        />
+      )
+    }
+  </main>
+</BaseLayout>
