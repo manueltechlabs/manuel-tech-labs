@@ -1,4 +1,15 @@
-export const categories = {
+export const COLLECTION_MAP = {
+  post: 'posts',
+  project: 'projects',
+} as const;
+
+export type ContentType = keyof typeof COLLECTION_MAP;
+
+export function getCollectionName(type: ContentType): string {
+  return COLLECTION_MAP[type];
+}
+
+export const postCategories = {
   'software-development': {
     slug: 'software-development',
     name: 'Software Development',
@@ -112,27 +123,51 @@ export const categories = {
 
 } as const;
 
-export type CategoryKey = keyof typeof categories;
+export const projectCategories = {
+  'software-development': {
+    slug: 'software-development',
+    name: 'Software Development',
+    description: 'Cloud computing, platforms, and deployment strategies.',
+    heading: 'Cloud Articles and Guides',
+    metaDescription: 'Read expert articles and tutorials in the Cloud category. Explore tips, tools, and best practices.',
+  },
+  cloud: {
+    slug: 'cloud',
+    name: 'Cloud',
+    description: 'Cloud computing, platforms, and deployment strategies.',
+    heading: 'Cloud Articles and Guides',
+    metaDescription: 'Read expert articles and tutorials in the Cloud category. Explore tips, tools, and best practices.',
+  },
+} as const;
+
+// Unified Type and Lookup
+export const allCategories = {
+  ...postCategories,
+  ...projectCategories,
+};
+
+export type CategoryKey = keyof typeof allCategories;
 
 export function isCategory(slug: string): slug is CategoryKey {
-  return slug in categories;
+  return slug in allCategories;
 }
 
-export function getCategoryBySlug(slug: string): (typeof categories)[CategoryKey] | undefined {
-  return isCategory(slug) ? categories[slug] : undefined;
+export function getCategoryBySlug(slug: string): (typeof allCategories)[CategoryKey] | undefined {
+  return isCategory(slug) ? allCategories[slug] : undefined;
 }
 
-export function getCategoryInfo(slug: string) {
+export function getCategoryInfo(slug: string, type: 'post' | 'project') {
+  const categories = type === 'post' ? postCategories : projectCategories;
   if (!isCategory(slug)) {
     throw new Error(`[getCategoryInfo] Unknown category: "${slug}"`);
   }
-  return categories[slug];
+  return allCategories[slug];
 }
 
 export function getAllCategories() {
-  return Object.values(categories);
+  return Object.values(allCategories);
 }
 
 export function getAllCategorySlugs(): CategoryKey[] {
-  return Object.keys(categories) as CategoryKey[];
+  return Object.keys(allCategories) as CategoryKey[];
 }

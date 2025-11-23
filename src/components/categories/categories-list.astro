@@ -1,9 +1,12 @@
 ---
 import { getCategoriesWithCount } from '@/shared/hooks/get-unique-categories';
-
 import CategoryCard from './ui/category-card.astro';
+import { getCollectionName } from '@/shared/helpers/category.helpers'; 
 
-const categories = await getCategoriesWithCount('posts');
+const { contentType } = Astro.props;
+
+const collectionName = getCollectionName(contentType);
+const categories = await getCategoriesWithCount(collectionName);
 ---
 
 <section class='categories-list'>
@@ -12,6 +15,7 @@ const categories = await getCategoriesWithCount('posts');
       <CategoryCard
         categoryName={category.name}
         count={category.count}
+        contentType={contentType}
       />
     ))
   }

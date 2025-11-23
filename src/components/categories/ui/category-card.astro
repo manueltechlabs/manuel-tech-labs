@@ -4,10 +4,11 @@ import { getCategoryInfo } from '@/shared/helpers/category.helpers';
 export interface Props {
   categoryName: string;
   count: number;
+  contentType: 'post' | 'project';
 }
 
-const { categoryName, count } = Astro.props;
-const { name, description } = getCategoryInfo(categoryName, 'post');
+const { categoryName, count, contentType } = Astro.props;
+const { name, description } = getCategoryInfo(categoryName, contentType);
 ---
 
 <div class='category-card'>
