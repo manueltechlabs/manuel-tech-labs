@@ -7,17 +7,38 @@ export interface BreadcrumbItem {
 export function generateTagBreadcrumbs(
   tagName: string,
   tagSlug: string,
-  currentPage?: number
+  currentPage?: number,
+  collection?: string
 ): BreadcrumbItem[] {
   const items: BreadcrumbItem[] = [
-    { label: 'Tags', href: '/tags/' },
-    { label: tagName, href: `/tags/${tagSlug}/` },
+    { label: 'Home', href: '/' },
   ];
 
-  if (currentPage && currentPage > 1) {
-    items[1].href = `/tags/${tagSlug}/`; 
-    items.push({ label: `Page ${currentPage}` });
+  // Add collection if provided
+  if (collection) {
+    const collectionLabel = collection === 'posts' ? 'Posts' : 'Projects';
+    items.push({
+      label: collectionLabel,
+      href: `/${collection}/`,
+    });
   }
+
+  // Add tags section
+  items.push({
+    label: 'Tags',
+    href: `/${collection}/tags/`,
+  });
+
+  // Add current tag
+  const tagUrl = currentPage && currentPage > 1
+    ? `/${collection}/tag/${tagSlug}/${currentPage}/`
+    : `/${collection}/tag/${tagSlug}/`;
+
+  items.push({
+    label: tagName,
+    href: tagUrl,
+    isCurrent: true,
+  });
 
   return items;
 }

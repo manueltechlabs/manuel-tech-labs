@@ -1,0 +1,219 @@
+---
+// examples:
+// http://localhost:4321/posts/tag/clean-code/
+// http://localhost:4321/posts/tag/testing/
+import { getCollection } from 'astro:content';
+import Breadcrumbs from '@/components/base/breadcrumbs.astro';
+import Pagination from '@/components/layout/pagination.astro';
+import Posts from '@/components/post/posts.astro'; // Reuse or make dynamic
+import { siteConfig } from '@/app/config/site';
+import BaseLayout from '@/app/layouts/base-layout.astro';
+import { generateTagBreadcrumbs } from '@/shared/helpers/breadcrumbs.helpers';
+
+export const prerender = true;
+
+export const getStaticPaths = async ({ paginate }) => {
+  const collectionNames = ['posts', 'projects']; // Add your collections
+  const allPaths = [];
+
+  /* 
+  the for (const collectionName of collectionNames) loop in getStaticPaths iterates over each collection (e.g., 'posts', 'projects'), fetching and grouping their items by tag. For each tag found, it generates a set of paths with params: { collection: collectionName, tag: tagSlug }.
+  */
+  for (const collectionName of collectionNames) {
+    const items = await getCollection(collectionName, ({ data }) => !data.isDraft);
+    const tagsMap = new Map();
+
+    // Group items by tag
+    items.forEach(item => {
+      const tags = Array.isArray(item.data.tags) ? item.data.tags : [];
+      tags.forEach(tag => {
+        if (tag && typeof tag === 'string') {
+          const tagSlug = tag.toLowerCase().replace(/\s+/g, '-');
+          if (!tagsMap.has(tagSlug)) {
+            tagsMap.set(tagSlug, { name: tag, items: [] });
+          }
+          tagsMap.get(tagSlug).items.push(item);
+        }
+      });
+    });
+
+    // Sort items by date
+    for (const [, tagData] of tagsMap) {
+      tagData.items.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
+    }
+
+    // Generate paginated paths
+    for (const [tagSlug, tagData] of tagsMap) {
+      const pages = paginate(tagData.items, {
+        params: { collection: collectionName, tag: tagSlug },
+        pageSize: siteConfig.postsPerPage,
+        props: { tagName: tagData.name, totalItems: tagData.items.length },
+      });
+      allPaths.push(...pages);
+    }
+  }
+
+  return allPaths;
+};
+
+const { collection, tag } = Astro.params;
+const page = Astro.props.page;
+const { tagName, totalItems } = Astro.props;
+
+const currentPage = page.currentPage;
+const isFirstPage = currentPage === 1;
+
+if (!collection || !tag || !['posts', 'projects'].includes(collection)) {
+  return new Response(null, { status: 404 });
+}
+
+const breadcrumbItems = generateTagBreadcrumbs(tagName, tag, currentPage > 1 ? currentPage : undefined, collection);   
+
+const baseName = collection === 'posts' ? 'articles' : 'projects';
+const pageTitle = isFirstPage
+  ? `${tagName} ${baseName} - Latest Guides | JSdev`
+  : `${tagName} ${baseName} - Page ${currentPage} | JSdev`;
+
+const pageDescription = isFirstPage
+  ? `Discover ${totalItems} ${baseName} about ${tagName}. Learn from tutorials and practical examples.`
+  : `Page ${currentPage} of ${page.lastPage} - Continue exploring ${tagName} ${baseName}.`;
+
+const canonicalUrl = isFirstPage
+  ? `${siteConfig.siteUrl}/${collection}/tag/${tag}/`
+  : `${siteConfig.siteUrl}/${collection}/tag/${tag}/${currentPage}/`;
+
+const shouldIndex = isFirstPage;
+const robotsContent = shouldIndex ? 'index, follow' : 'noindex, follow';
+const numberOfPages = Math.ceil(totalItems / siteConfig.postsPerPage);
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <Fragment slot="head">
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="robots" content={robotsContent} />
+    {page.url.prev && <link rel="prev" href={`${siteConfig.siteUrl}${page.url.prev}`} />}
+    {page.url.next && <link rel="next" href={`${siteConfig.siteUrl}${page.url.next}`} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    {isFirstPage && (
+      <script
+        type="application/ld+json"
+        set:html={JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: `${tagName} ${baseName}`,
+          description: pageDescription,
+          url: canonicalUrl,
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: totalItems,
+            itemListElement: page.data.slice(0, 3).map((item, index) => ({
+              '@type': 'Article',
+              position: index + 1,
+              name: item.data.title,
+              description: item.data.desc,
+              url: `${siteConfig.siteUrl}/${item.data.permalink}/`,
+            })),
+          },
+        })}
+      />
+    )}
+  </Fragment>
+
+  <main class="main">
+    <header class="tag-header">
+      <div class="tag-header__container">
+        <Breadcrumbs items={breadcrumbItems} />
+        <h1 class="tag-header__title">
+          #{tagName} <span class="tag-header__count">({totalItems} {baseName})</span>
+        </h1>
+        <p class="tag-header__description">{pageDescription}</p>
+      </div>
+    </header>
+
+    <Posts posts={page.data} /> <!-- Consider making this dynamic -->
+
+    {numberOfPages > 1 && (
+      <Pagination
+        numPages={page.lastPage}
+        currentPage={currentPage}
+        slug={`${collection}/tag/${tag}`}
+      />
+    )}
+  </main>
+</BaseLayout>
+<style>
+  .tag-header {
+    background: linear-gradient(135deg, #f9fbfd 0%, #edf2f7 100%);
+    color: var(--oposite-color);
+    padding: 1.5rem 0;
+    position: relative;
+    margin-top: 2.5rem;
+  }
+
+  :global(.dark) .tag-header {
+    background: linear-gradient(135deg, #070503 0%, #1d1720 100%);
+  }
+
+  .tag-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  }
+
+  .tag-header__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .tag-header__title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: #3b82f6;
+  }
+
+  .tag-header__count {
+    font-size: 1.4rem;
+    font-weight: 400;
+    opacity: 0.8;
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--oposite-color);
+  }
+
+  .tag-header__description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.9;
+    margin: 0;
+    max-width: 1000px;
+  }
+
+  @media (max-width: 768px) {
+    .tag-header {
+      padding: 1.5rem 0;
+    }
+
+    .tag-header__title {
+      font-size: 1.5rem;
+    }
+
+    .tag-header__count {
+      font-size: 1.125rem;
+    }
+
+    .tag-header__description {
+      font-size: 1rem;
+    }
+  }
+</style>
