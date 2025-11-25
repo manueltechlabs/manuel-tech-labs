@@ -11,7 +11,7 @@ export function generateTagBreadcrumbs(
   collection?: string
 ): BreadcrumbItem[] {
   const items: BreadcrumbItem[] = [
-    { label: 'Home', href: '/' },
+
   ];
 
   // Add collection if provided
@@ -65,13 +65,30 @@ export function generateCategoryBreadcrumbs(
 export function generatePostBreadcrumbs(
   categoryName: string,
   categorySlug: string,
-  postTitle: string
+  postTitle: string,
+  collection?: string
 ): BreadcrumbItem[] {
-  return [
-    { label: 'Categories', href: '/categories/' },
-    { label: categoryName, href: `/${categorySlug}/` },
-    { label: postTitle },
-  ];
+  const items: BreadcrumbItem[] = [];
+  // Add collection if provided
+  if (collection) {
+    const collectionLabel = collection === 'posts' ? 'Posts' : 'Projects';
+    items.push({
+      label: collectionLabel,
+      href: `/${collection}/`
+    });
+  }
+  // Add categories section
+  items.push({
+    label: 'Categories',
+    href: `/${collection}/categories/`
+  });
+  // Add current category
+  const categoryUrl = `/${collection}/category/${categorySlug}/`;
+  items.push({
+    label: categoryName,
+    href: categoryUrl
+  });
+  return items;
 }
 
 export function generateHowtoBreadcrumbs(

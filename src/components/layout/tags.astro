@@ -3,9 +3,11 @@ import Badge from '@/components/base/badge.astro';
 
 type TagsProps = {
   tags: string[];
+  contentType: 'posts' | 'projects';
 };
 
-const { tags } = Astro.props;
+
+const { tags, contentType } = Astro.props;
 ---
 
 <div class='tags'>
@@ -13,7 +15,7 @@ const { tags } = Astro.props;
     tags.length > 0 &&
       tags.map(tag => {
         return (
-          <a href={`/tag/${tag.trim().toLowerCase()}/`}>
+          <a href={`/${contentType}/tag/${tag.trim().toLowerCase()}/`}>
             <Badge
               variant='outline'
               title={tag}

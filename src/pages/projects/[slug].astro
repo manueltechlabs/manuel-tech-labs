@@ -41,7 +41,8 @@ const categorySlug =
 const breadcrumbItems = generatePostBreadcrumbs(
   project.data.category ?? '',
   categorySlug,
-  project.data.title
+  project.data.title,
+  'projects',
 );
 
 const newDate = formatDate(project.data.date);
@@ -102,7 +103,7 @@ const newDate = formatDate(project.data.date);
               >{project.data.category}</Badge
             >
           </a>
-          <Tags tags={project.data.tags} />
+          <Tags tags={project.data.tags} contentType='projects' />
         </div>
         <RelatedPosts
           collection='projects'
