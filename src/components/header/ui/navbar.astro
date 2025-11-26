@@ -1,10 +1,12 @@
 ---
 import Logo from '@/components/base/logo.astro';
 import SearchWithData from '@/components/search/ui/search-with-data.astro';
-import { Github, Rss } from '@lucide/astro';
+import { Github, Linkedin } from '@lucide/astro';
 
 import Navigation from './navigation.astro';
 import ThemeSwitcher from './theme-switcher.astro';
+import { siteConfig } from '@/app/config/site';
+const { social } = siteConfig;
 ---
 
 <>
@@ -17,21 +19,21 @@ import ThemeSwitcher from './theme-switcher.astro';
   <Navigation />
   <div class='header-panel'>
     <!-- <Search /> -->
-    <SearchWithData placeholder='Search posts, tutorials, and more...' />
+    <SearchWithData placeholder='Search posts, projects, and more...' />
     <div class='header-icons'>
       <ThemeSwitcher />
       <a
-        href='https://jsdev.space/rss.xml'
+        href={social.linkedin}
         aria-label='RSS'
         class='group cursor-pointer'>
-        <Rss
+        <Linkedin
           size={20}
           stroke-width={1}
           class='transition-all duration-300 hover:scale-125 hover:fill-blueLight hover:stroke-blueLight'
         />
       </a>
       <a
-        href='https://github.com/anliberant/jsdev-astro'
+        href={social.github}
         aria-label='RSS'
         class='group cursor-pointer'>
         <Github

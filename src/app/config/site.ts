@@ -1,32 +1,35 @@
 export const siteConfig = {
-  title: `JSDev Astro Theme - Demo JavaScript Blog Template`,
-  shortTitle: `JSDev Astro Theme`,
-  siteUrl: `https://jsdev.space`,
-  twitterUsername: `@jsdevspace`,
+  title: `Full-Stack Supply Chain Engineer & Spring Boot Developer`,
+  shortTitle: `Spring Boot Developer`,
+  siteUrl: `https://manueltechlabs.com`,
+  //twitterUsername: `@jsdevspace`,
   image: '/icon.png',
-  description: `This is a demonstration website showcasing the JSDev Astro Theme — a modern blog template built for JavaScript and frontend developers.`,
+  description: `Building intelligent, data-driven systems for manufacturing and SCM—leveraging Spring Boot, Python, and cloud technologies to deliver scalable backend solutions with a competitive edge in analytics and process optimization.`,
   navigation: [
-    { name: 'Category11', path: '#' },
-    { name: 'Category22', path: '#' },
-    { name: 'Category33', path: '#' }
+    { name: 'Home', path: '/' },
+    { name: 'Projects', path: '/projects' },
+    { name: 'Posts', path: '/posts' },
+    { name: 'About', path: 'about' },
+    { name: 'Contact', path: '/contact' },
   ],
   footerLinks: [
-    { name: 'Categories', path: '/categories' },
-    { name: 'Tags', path: '/tags' },
-    { name: 'Contact', path: '/contact' }
+    { name: 'Categories', path: '/posts/categories' },
+    { name: 'Tags', path: '/posts/tags' },
+    { name: 'Contact', path: '/posts/contact' }
   ],
   social: {
-    github: 'https://github.com/jsdevspace',
-    facebook: 'https://www.facebook.com/jsdevspace',
-    twitter: 'https://twitter.com/jsdevspace',
-    mastodon: 'https://mastodon.social/@jsdevspace',
-    telegram: 'https://t.me/jsdevspace',
-    substack: 'https://jsdevspace.substack.com',
-    bsky: 'https://bsky.app/profile/jsdevspace.bsky.social',
-    dailydev: 'https://app.daily.dev/squads/jsdevelopment'
+    github: 'https://github.com/manueltechlabs',
+    //facebook: 'https://www.facebook.com/jsdevspace',
+    //twitter: 'https://twitter.com/jsdevspace',
+    //mastodon: 'https://mastodon.social/@jsdevspace',
+    //telegram: 'https://t.me/jsdevspace',
+    //substack: 'https://jsdevspace.substack.com',
+    //bsky: 'https://bsky.app/profile/jsdevspace.bsky.social',
+    //dailydev: 'https://app.daily.dev/squads/jsdevelopment',
+    linkedin: 'https://www.linkedin.com/in/manueltechlabs',
   },
   postsPerPage: 15,
-  mainHeadTitle: 'Full-Stack Supply Chain Optimization',
+  mainHeadTitle: 'Full-Stack Supply Chain Engineer & Spring Boot Developer',
   mainHeadHeadingTwo:
     'Manuel Hernandez Zemljic: Data-Driven Systems for Manufacturing and SCM',
   mainHeadDescription:

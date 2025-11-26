@@ -70,7 +70,7 @@ const { placeholder, className } = Astro.props;
           </svg>
           <input
             type='search'
-            placeholder='Search posts, tutorials, and guides...'
+            placeholder={placeholder}
             class='search-input'
             id='searchInput'
             autocomplete='off'
@@ -108,7 +108,7 @@ const { placeholder, className } = Astro.props;
             <h3 class='section-title'>Quick Access</h3>
             <div class='quick-links'>
               <a
-                href='/'
+                href='/posts'
                 class='quick-link'>
                 <div class='quick-link-icon posts-icon'>
                   <svg
@@ -124,12 +124,12 @@ const { placeholder, className } = Astro.props;
                 </div>
                 <div class='quick-link-content'>
                   <span class='quick-link-title'>All Posts</span>
-                  <span class='quick-link-desc'>Browse our latest articles</span>
+                  <span class='quick-link-desc'>Browse my Engineering Insights</span>
                 </div>
               </a>
 
               <a
-                href='/howto/'
+                href='/projects'
                 class='quick-link'>
                 <div class='quick-link-icon howtos-icon'>
                   <svg
@@ -145,50 +145,8 @@ const { placeholder, className } = Astro.props;
                   </svg>
                 </div>
                 <div class='quick-link-content'>
-                  <span class='quick-link-title'>How-to Guides</span>
-                  <span class='quick-link-desc'>Step-by-step tutorials</span>
-                </div>
-              </a>
-
-              <a
-                href='/snippets/'
-                class='quick-link'>
-                <div class='quick-link-icon snippets-icon'>
-                  <svg
-                    width='16'
-                    height='16'
-                    viewBox='0 0 24 24'
-                    fill='none'
-                    stroke='currentColor'
-                    stroke-width='2'>
-                    <path d='M8 4v16m8-16v16M4 8h16M4 16h16'></path>
-                  </svg>
-                </div>
-                <div class='quick-link-content'>
-                  <span class='quick-link-title'>Code Snippets</span>
-                  <span class='quick-link-desc'>Reusable code examples</span>
-                </div>
-              </a>
-
-              <a
-                href='/friday/'
-                class='quick-link'>
-                <div class='quick-link-icon fridays-icon'>
-                  <svg
-                    width='16'
-                    height='16'
-                    viewBox='0 0 24 24'
-                    fill='none'
-                    stroke='currentColor'
-                    stroke-width='2'>
-                    <path
-                      d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'
-                    ></path>
-                  </svg>
-                </div>
-                <div class='quick-link-content'>
-                  <span class='quick-link-title'>Friday Links</span>
-                  <span class='quick-link-desc'>Weekly curated content</span>
+                  <span class='quick-link-title'>Projects</span>
+                  <span class='quick-link-desc'>Spring-Powered Solutions</span>
                 </div>
               </a>
             </div>
