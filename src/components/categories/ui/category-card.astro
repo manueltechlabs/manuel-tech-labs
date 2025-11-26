@@ -1,5 +1,5 @@
 ---
-import { getCategoryInfo } from '@/shared/helpers/category.helpers';
+import { getCategoryInfo, getCollectionName } from '@/shared/helpers/category.helpers';
 
 export interface Props {
   categoryName: string;
@@ -9,6 +9,7 @@ export interface Props {
 
 const { categoryName, count, contentType } = Astro.props;
 const { name, description } = getCategoryInfo(categoryName, contentType);
+const collectionName = getCollectionName(contentType);
 ---
 
 <div class='category-card'>
@@ -20,7 +21,7 @@ const { name, description } = getCategoryInfo(categoryName, contentType);
       {description.substring(0, 700) + '...'}
     </p>
     <a
-      href={`/${categoryName.toLowerCase()}/`}
+      href={`/${collectionName}/category/${categoryName.toLowerCase()}/`}
       class='category-card__link'>
       <button class='category-card__button'>
         Explore {count} posts in {categoryName} Category
