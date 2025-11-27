@@ -15,7 +15,7 @@ const { tags, contentType } = Astro.props;
     tags.length > 0 &&
       tags.map(tag => {
         return (
-          <a href={`/${contentType}/tag/${tag.trim().toLowerCase()}/`}>
+          <a href={`/${contentType}/tags/${tag.trim().toLowerCase()}/`}>
             <Badge
               variant='outline'
               title={tag}

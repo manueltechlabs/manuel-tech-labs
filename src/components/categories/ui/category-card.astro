@@ -21,10 +21,10 @@ const collectionName = getCollectionName(contentType);
       {description.substring(0, 700) + '...'}
     </p>
     <a
-      href={`/${collectionName}/category/${categoryName.toLowerCase()}/`}
+      href={`/${collectionName}/categories/${categoryName.toLowerCase()}/`}
       class='category-card__link'>
       <button class='category-card__button'>
-        Explore {count} posts in {categoryName} Category
+        Explore {count} {collectionName} in {categoryName} Category
       </button>
     </a>
   </div>
