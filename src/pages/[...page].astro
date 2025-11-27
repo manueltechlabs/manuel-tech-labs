@@ -124,8 +124,8 @@ const useBorderlessTitle = false;
       page.currentPage === 1 ?
         <HeadingBlock
           title={siteConfig.mainHeadTitle}
-          headingTwo={siteConfig.mainHeadHeadingTwo}
-          descriptionItems={[siteConfig.mainHeadDescription,]}
+
+          descriptionItems={siteConfig.mainHeadDescription}
         />
       : <h1 class='page-heading'>
           {siteConfig.shortTitle} Page {page.currentPage}

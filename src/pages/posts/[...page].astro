@@ -23,6 +23,12 @@ const sortedPosts = allPosts.sort((a, b) => {
   return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
 });
 
+// Filter projects that have the 'featured_at' field defined in their frontmatter
+const featuredPostList = sortedPosts.filter(post => post.data.featuredAt);
+
+// Slice the list to get only the top 3
+const myFeatPosts = featuredPostList.slice(0, 3);
+
 const numberOfPages = Math.ceil(sortedPosts.length / siteConfig.postsPerPage);
 
 
@@ -51,12 +57,29 @@ const title =
     {
       page.currentPage === 1 ?
         <HeadingBlock
-          title="Blog Posts"
-          descriptionItems={["Navigate though my Blog Posts",]}
+          title="Engineering Insights"
+          descriptionItems={["Deep dives into Spring Boot development, system design, and data engineering—documenting my journey to build better software and smarter supply chains.",]}
         />
       : <h1 class='page-heading'>
-          {"Blog Posts"} Page {page.currentPage}
+          {"Post List"} Page {page.currentPage}
         </h1>
+    }
+    {
+      page.currentPage === 1 && (
+        <HeadingBlock
+          title={siteConfig.featuredPostsTile}
+        />
+      )
+    }
+    {
+      page.currentPage === 1 && <FeaturedPosts posts={myFeatPosts} />
+    }
+    {
+      page.currentPage === 1 && (
+        <HeadingBlock
+          title="Post List:"
+        />
+      )
     }
     {
       <Posts posts={page.data} />
@@ -66,7 +89,7 @@ const title =
         <Pagination
           currentPage={page.currentPage}
           numPages={numberOfPages}
-          slug='/'
+          slug='/posts/'
         />
       )
     }

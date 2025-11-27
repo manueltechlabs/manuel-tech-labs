@@ -9,12 +9,23 @@ import Projects from '@/components/project/projects.astro';
 
 import { siteConfig } from '@/app/config/site';
 import BaseLayout from '@/app/layouts/base-layout.astro';
+import FeaturedProjects from '@/components/project/featured-projects.astro';
 
 const allProjects = await getCollection('projects', ({ data }) => !data.isDraft);
 
 const sortedProjects = allProjects.sort((a, b) => {
   return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
 });
+
+// Featured projects
+// Filter projects that have the 'featured_at' field defined in their frontmatter
+const featuredProjectsList = allProjects.filter(project => project.data.featuredAt);
+
+// Sort the filtered projects by the featured date (newest first)
+featuredProjectsList.sort((a, b) => new Date(b.data.featuredAt).getTime() - new Date(a.data.featuredAt).getTime());
+
+// Slice the list to get only the top 3
+const myFeaturedProjects = featuredProjectsList.slice(0, 3);
 
 const numberOfPages = Math.ceil(sortedProjects.length / siteConfig.postsPerPage);
 
@@ -42,6 +53,15 @@ const title =
 
 <BaseLayout title={title}>
   <main class='main'>
+    <HeadingBlock title="Spring-Powered Solutions"
+    descriptionItems={["A showcase of backend systems and full-stack applications built with Spring Boot—demonstrating clean architecture, integration with databases and cloud services, and a focus on solving complex operational challenges in supply chain and beyond."]} />
+    <HeadingBlock title="Pinned Projects"
+    />
+    {
+      page.currentPage === 1 && <FeaturedProjects projects={myFeaturedProjects}/>
+    }
+    <HeadingBlock title="Projects"
+    />
     {
       <Projects projects={page.data} />
     }
@@ -50,7 +70,7 @@ const title =
         <Pagination
           currentPage={page.currentPage}
           numPages={numberOfPages}
-          slug='/'
+          slug='/projects/'
         />
       )
     }

@@ -9,7 +9,7 @@ export const siteConfig = {
     { name: 'Home', path: '/' },
     { name: 'Projects', path: '/projects' },
     { name: 'Posts', path: '/posts' },
-    { name: 'About', path: 'about' },
+    { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ],
   footerLinks: [
@@ -30,19 +30,14 @@ export const siteConfig = {
   },
   postsPerPage: 15,
   mainHeadTitle: 'Full-Stack Supply Chain Engineer & Spring Boot Developer',
-  mainHeadHeadingTwo:
-    'Manuel Hernandez Zemljic: Data-Driven Systems for Manufacturing and SCM',
-  mainHeadDescription:
-    'I implement continuous improvement through system automation, advanced data analytics (ML/DL), and full-stack application development, specializing in manufacturing and supply chain operations (ERP, WMS, KPI systems).',
+  mainHeadDescription: ['I hack processes using technology to build better, more efficient solutions', 'Building intelligent, data-driven systems for manufacturing and SCM—leveraging Spring Boot, Python, and cloud technologies to deliver scalable back end solutions with a competitive edge in analytics and process optimization.'],
   icons: {
     chevronLeft: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>`,
     chevronRight: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`,
     moreHorizontal: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`
   },
   footerTextParagraphOne:
-    'This is a demonstration site built with the JSDev Astro Theme — a modern template for building fast, SEO-friendly blogs for JavaScript and web developers.',
-  footerTextParagraphTwo:
-    'All content here is for preview purposes. Follow us on social media to stay connected with theme updates, coding tips, and news from the JavaScript community. 🚀',
+    'Engineered for performance, scalability, and impact.',
   skillsTitle: "What I Do",
   skillsHeader: "I design and optimize end-to-end manufacturing and supply chain systems by bridging Industrial Engineering, Data Science, and Full-Stack Development.",
   skillsHeaderTwo: "My expertise spans:",
