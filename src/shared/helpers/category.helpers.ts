@@ -124,19 +124,19 @@ export const postCategories = {
 } as const;
 
 export const projectCategories = {
-  'software-development': {
-    slug: 'software-development',
-    name: 'Software Development',
-    description: 'Cloud computing, platforms, and deployment strategies.',
-    heading: 'Cloud Articles and Guides',
-    metaDescription: 'Read expert articles and tutorials in the Cloud category. Explore tips, tools, and best practices.',
+  'full-stack-web-development': {
+    slug: 'full-stack-web-development',
+    name: 'Full Stack Web Development',
+    description: 'Projects combining frontend and backend development, using Spring Boot, MySQL, AWS, and Docker to build scalable, secure, and maintainable web applications.',
+    heading: 'Full-Stack Web Development',
+    metaDescription: 'End-to-end web applications with Java, RESTful APIs, and cloud deployment — showcasing full-stack development from UI to database.',
   },
-  cloud: {
-    slug: 'cloud',
-    name: 'Cloud',
-    description: 'Cloud computing, platforms, and deployment strategies.',
-    heading: 'Cloud Articles and Guides',
-    metaDescription: 'Read expert articles and tutorials in the Cloud category. Explore tips, tools, and best practices.',
+  'data-science': {
+    slug: 'data-science',
+    name: 'Data Science',
+    description: 'A collection of projects showcasing expertise in data analysis, machine learning, statistical modeling, and business intelligence using Python, SQL, Tableau, and advanced analytical techniques.',
+    heading: 'Data Science',
+    metaDescription: 'Explore data science projects including A/B testing, clustering, Markov models, and BI dashboards with SQL, Python, and Tableau.',
   },
 } as const;
 

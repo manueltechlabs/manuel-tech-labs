@@ -1,14 +1,50 @@
 ---
-title: 'Supply Chain Optimization'
+title: 'Supply Chain Optimization for TheLook eCommerce'
 slug: supply-chain-optimization
 permalink: supply-chain-optimization
-desc: 'Supply Chain Optimization'
+desc: 'Analyzed TheLook’s supply chain using SQL & Python. Built KPIs for delivery, inventory, and sales to optimize logistics and boost profitability.'
 url: 'https://colab.research.google.com/drive/10qF2NcTlDrCySDnK1eLzdup3RXVvwU39?usp=sharing'
 git: ''
-category: 'software-development'
-tags: ['Tableau', 'SQL', 'Python', 'Machine Learning']
+category: 'data-science'
+tags: ['supply-chain-optimization', 'data-analysis', 'python', 'sql', 'big-query', 'kpis', 'inventory-management', 'logistics-analytics', 'ecommerce-analytics', 'tableau', 'customer-experience', 'delivery-efficiency']
 date: 2025-10-26
 featuredAt: 2025-10-26
-image: ./images/marketing.png
+image: ./images/colab_project.svg
 ---
-(Your detailed project description goes here using Markdown)
+# Performance Metrics and Insights – A Data-Driven Approach to Supply Chain Optimization of the Look eCommerce
+## Key Findings
+### 📈 Sales Growth: Jeans sales surged from $4.7K (2019) to $130.8K (2024); Outerwear led in gross profit (↑ from $2.78M to $71.84M).
+### 🛒 Conversion Uplift: Website conversion rates rose from 0.09% (2019) to 8.25% (2023), reflecting improved funnel efficiency.
+### ⚠️ Cart Abandonment: 26.7% of users abandon carts—checkout friction is a key opportunity.
+### 📦 Operational Stability: Service levels improved (0.755 → 0.768) with greater consistency (std dev ↓ from 0.05 to 0.01).
+### 🧩 No Demographic Impact: Age, gender, and country show no significant effect on cancellations (p > 0.05).
+### 📅 Seasonal Peaks: Strong December spikes and summer demand (June–August) highlight timing for targeted campaigns.
+
+## Project Overview
+This project delivers a comprehensive supply chain and operational analysis of The Look eCommerce, a synthetic dataset by Google’s Looker team. Using Python (Google Colab) and SQL (BigQuery), the analysis spans data exploration, cleaning, transformation, and KPI modeling across core tables: products, orders, users, events, and distribution_centers.
+
+### Key metrics evaluated:
+
+- Sales & Profitability: Category performance, margin, trends
+- Customer Experience: Delivery time, OTD, return rate
+- Inventory Management: Turnover, fill rates, service level
+- Marketing Effectiveness: Conversion funnels, session trends, Markov chains
+Advanced techniques include K-means, DBSCAN, and hierarchical clustering for customer segmentation, and Markov chain modeling to map user journeys. Navigation flows (home → department → product → cart) show high efficiency (100% transition), but cart-to-purchase conversion remains suboptimal.
+
+## Interactive Tableau Dashboards
+Complementing the Colab analysis, a suite of four interactive Tableau dashboards visualizes key insights:
+
+- Sales Metrics: Trends, category performance, profitability
+- Customer Metrics: Delivery time, return rate, OTIF
+- Marketing Metrics: Sessions, conversion funnel, traffic sources
+- Inventory Management: Turnover, fill rates, processing time
+
+These dashboards enable real-time exploration and support data-driven decision-making.
+
+## Actionable Recommendations
+Optimize checkout UX to reduce cart abandonment (e.g., guest checkout, progress indicators)
+Leverage seasonal demand with targeted promotions in Q4 and summer
+Focus inventory planning on high-growth categories (Jeans, Outerwear)
+Improve fulfillment reliability in underperforming distribution centers
+Use behavioral (not demographic) data to predict cancellations
+This end-to-end project demonstrates how data analytics can drive operational excellence in eCommerce, from backend SQL/Python analysis to front-end Tableau visualization.
