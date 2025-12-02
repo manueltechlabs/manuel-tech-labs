@@ -94,13 +94,13 @@ const breadcrumbItems = generateCategoryBreadcrumbs(
 
 const pageTitle =
   currentPage === 1 ?
-    `${categoryName} Articles | JSdev`
-  : `${categoryName} Articles - Page ${currentPage} | JSdev`;
+    `${categoryName} Articles | ManuelTechLabs`
+  : `${categoryName} Articles - Page ${currentPage} | ManuelTechLabs`;
 
-const pageDescription = `Explore ${totalPosts} ${categoryName.toLowerCase()} posts and tutorials. ${
+const pageDescription = `Explore ${totalPosts} ${categoryName.toLowerCase()} posts. ${
   currentPage > 1 ?
     `Page ${currentPage} of ${page.lastPage}.`
-  : 'Learn from our comprehensive guides and examples.'
+  : 'Learn from my comprehensive articles and documentation.'
 }`;
 ---
 
@@ -122,7 +122,8 @@ const pageDescription = `Explore ${totalPosts} ${categoryName.toLowerCase()} pos
         <CategoryHead
           categoryName={categoryName}
           currentPage={currentPage}
-          totalPosts={totalPosts}
+          totalItems={totalPosts}
+          type='posts'
           class='mt-10'
         />
       : <h1>

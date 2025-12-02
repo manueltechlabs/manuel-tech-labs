@@ -15,7 +15,7 @@ export const siteConfig = {
   footerLinks: [
     { name: 'Categories', path: '/posts/categories' },
     { name: 'Tags', path: '/posts/tags' },
-    { name: 'Contact', path: '/posts/contact' }
+    { name: 'Contact', path: '/contact' }
   ],
   social: {
     github: 'https://github.com/manueltechlabs',

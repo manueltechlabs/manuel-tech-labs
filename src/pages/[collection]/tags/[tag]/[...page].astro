@@ -71,11 +71,11 @@ const breadcrumbItems = generateTagBreadcrumbs(tagName, tag, currentPage > 1 ? c
 
 const baseName = collection === 'posts' ? 'articles' : 'projects';
 const pageTitle = isFirstPage
-  ? `${tagName} ${baseName} - Latest Guides | JSdev`
-  : `${tagName} ${baseName} - Page ${currentPage} | JSdev`;
+  ? `${tagName} ${baseName} - Latest Posts | ManuelTechLabs`
+  : `${tagName} ${baseName} - Page ${currentPage} | ManuelTechLabs`;
 
 const pageDescription = isFirstPage
-  ? `Discover ${totalItems} ${baseName} about ${tagName}. Learn from tutorials and practical examples.`
+  ? `Discover ${totalItems} ${baseName} about ${tagName}. Learn from posts and documentation.`
   : `Page ${currentPage} of ${page.lastPage} - Continue exploring ${tagName} ${baseName}.`;
 
 const canonicalUrl = isFirstPage
@@ -133,7 +133,7 @@ const numberOfPages = Math.ceil(totalItems / siteConfig.postsPerPage);
       </div>
     </header>
 
-    <Posts posts={page.data} /> <!-- Consider making this dynamic -->
+    <Posts posts={page.data} />
 
     {numberOfPages > 1 && (
       <Pagination

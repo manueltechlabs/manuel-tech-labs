@@ -100,7 +100,7 @@ const pageTitle =
 const pageDescription = `Explore ${totalProjects} ${categoryName.toLowerCase()} Projects. ${
   currentPage > 1 ?
     `Page ${currentPage} of ${page.lastPage}.`
-  : 'Learn from our comprehensive guides and examples.'
+  : 'Learn from my Projects.'
 }`;
 ---
 
@@ -122,7 +122,8 @@ const pageDescription = `Explore ${totalProjects} ${categoryName.toLowerCase()} 
         <CategoryHead
           categoryName={categoryName}
           currentPage={currentPage}
-          totalProjects={totalProjects}
+          totalItems={totalProjects}
+          type='projects'
           class='mt-10'
         />
       : <h1>
