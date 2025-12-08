@@ -15,7 +15,9 @@ export default defineConfig({
     sitemap(),
     netlify(),
   ],
-  adapter: netlify(),
+  adapter: netlify({
+    imageCDN: false
+  }),
 
   markdown: {
     remarkPlugins: [remarkReadingTime],
