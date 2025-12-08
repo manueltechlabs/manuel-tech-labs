@@ -13,7 +13,6 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap(),
-    netlify(),
   ],
   adapter: netlify({
     imageCDN: false
