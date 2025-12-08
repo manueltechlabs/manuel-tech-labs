@@ -17,6 +17,13 @@ export const postCategories = {
     heading: 'Cloud Articles and Guides',
     metaDescription: 'Read expert articles and tutorials in the Cloud category. Explore tips, tools, and best practices.',
   },
+    'data-science': {
+    slug: 'data-science',
+    name: 'Data Science',
+    description: 'Explore in-depth analyses and real-world applications in data science, covering data analytics, machine learning, and business intelligence. This category dives into SQL, Python, visualization tools like Tableau, and advanced techniques to turn raw data into actionable insights.',
+    heading: 'Data Science',
+    metaDescription: 'A curated collection of data science projects and insights—covering analytics, machine learning, and visualization with SQL, Python, and Tableau.',
+  },
   cloud: {
     slug: 'cloud',
     name: 'Cloud',
