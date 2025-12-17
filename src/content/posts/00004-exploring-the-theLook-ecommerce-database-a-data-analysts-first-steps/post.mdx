@@ -1,0 +1,175 @@
+---
+title: "Chapter 2: Exploring the theLook eCommerce Database"
+slug: exploring-the-theLook-ecommerce-database-a-data-analysts-first-steps
+heading: "A Data Analyst’s First Look: Exploring the theLook eCommerce Database"
+image: ./images/tHOyzp9iKdkhm97P.jpg
+permalink: exploring-the-theLook-ecommerce-database-a-data-analysts-first-steps
+date: 2025-12-17
+author: Manuel
+category: data-science
+type: post
+tags: [ 'data-analysis', 'ecommerce-analytics', 'big-query', 'data-exploration', 'data-analyst-portfolio', 'sql', 'business-intelligence', 'customer-behavior', 'supply-chainAnalytics', 'data-driven-decisions']
+desc: "A data analyst's hands-on exploration of the theLook eCommerce dataset in BigQuery, revealing how to understand an unfamiliar database through SQL queries."
+featuredAt: 2025-12-16
+---   
+
+# Chapter 2: Exploring the theLook eCommerce Database — A Data Analyst’s First Steps
+
+Welcome back to Performance Metrics and Insights: A Data-Driven Analysis of TheLook. In the [first chapter](https://manueltechlabs.com/posts/unlocking-ecommerce-success-a-deep-dive-into-thelook-dataset/), we introduced the theLook eCommerce dataset—a rich, realistic, synthetic dataset perfect for practicing real-world analytics. Now, in this second chapter, I’ll walk you through how I explore an unfamiliar database, just as I would on the job.
+
+This isn’t just about writing queries—it’s about thinking like an analyst: asking the right questions, understanding business logic, and uncovering insights hidden in the schema.
+
+## Step 1: What Tables Are We Working With?
+
+First, I need to know what’s available. A quick INFORMATION_SCHEMA query reveals the structure:
+
+```sql
+SELECT table_name 
+FROM `bigquery-public-data.thelook_ecommerce.INFORMATION_SCHEMA.TABLES`;
+```
+
+| table_name |
+|------------|
+| users |
+| order_items |
+| distribution_centers |
+| inventory_items |
+| products |
+| orders |
+| events |
+
+✅ 7 core tables—a clean, normalized schema typical of modern eCommerce platforms.
+
+## Step 2: Understand Each Table — One by One
+
+I start with the products table—because if we don’t know what’s being sold, we can’t analyze anything.
+
+### products Table
+
+```sql
+SELECT * FROM `bigquery-public-data.thelook_ecommerce.products` LIMIT 5;   
+```
+
+This shows product id, name, category, brand, retail_price, and distribution_center_id. A follow-up query reveals:
+
+```sql
+SELECT 
+  COUNT(DISTINCT id) AS num_products,
+  COUNT(DISTINCT category) AS num_categories,
+  COUNT(DISTINCT brand) AS num_brands
+FROM `bigquery-public-data.thelook_ecommerce.products`;
+```
+
+| num_products | num_categories | num_brands |
+|--------------|----------------|------------|
+| 29,120       | 26             | 2,756      |
+
+📌 Insight: A highly diversified catalog—2,756 brands across 26 categories. This suggests a focus on variety, possibly including private labels.
+
+### distribution_centers Table
+
+```sql
+SELECT * FROM `bigquery-public-data.thelook_ecommerce.distribution_centers`;
+```
+
+|index|id|name|latitude|longitude|
+|---|---|---|---|---|
+|0|1|Memphis TN|35\.1174|-89\.9711|
+|1|2|Chicago IL|41\.8369|-87\.6847|
+|2|3|Houston TX|29\.7604|-95\.3698|
+|3|4|Los Angeles CA|34\.05|-118\.25|
+|4|5|New Orleans LA|29\.95|-90\.0667|
+|5|6|Port Authority of New York/New Jersey NY/NJ|40\.634|-73\.7834|
+|6|7|Philadelphia PA|39\.95|-75\.1667|
+|7|8|Mobile AL|30\.6944|-88\.0431|
+|8|9|Charleston SC|32\.7833|-79\.9333|
+|9|10|Savannah GA|32\.0167|-81\.1167|
+
+10 centers across the U.S., including major ports. This layout supports national and international shipping.
+
+### events Table — The Heart of User Behavior
+
+```sql
+SELECT DISTINCT event_type FROM `bigquery-public-data.thelook_ecommerce.events`;
+```
+
+| event_type |
+|------------|
+| home |
+| department |
+| product |
+| cart |
+| purchase |
+| cancel |
+
+📌 Business Logic Revealed:
+
+- Users start at home.
+- Browse by department and product.
+- Add to cart.
+- purchase or cancel.
+- This is the conversion funnel in raw form.
+
+And the uri field? It’s even more telling:
+
+```sql
+SELECT event_type, uri 
+FROM `bigquery-public-data.thelook_ecommerce.events` 
+WHERE event_type = 'department' LIMIT 5;   
+```
+
+| event_type | uri |
+|------------|-----|
+| department | /department/women/category/jeans/brand/vigoss |
+| department | /department/women/category/pants&capris/brand/... |
+| department | /department/women/category/intimates/brand/swe... |
+| ... | ...|
+| department | /department/men/category/active/brand/columbia |
+
+🔍 The API is hierarchical: /department/\{gender\}/category/\{category\}/brand/\{brand\}. This is gold for funnel analysis and campaign tracking.
+
+### inventory_items — Tracking Stock Lifecycle
+
+```sql
+SELECT * FROM `bigquery-public-data.thelook_ecommerce.inventory_items` LIMIT 5;
+```
+
+Key fields: created_at, sold_at, cost, product_distribution_center_id.
+
+### orders and order_items — The Transaction Core
+
+```sql
+SELECT DISTINCT status FROM `bigquery-public-data.thelook_ecommerce.orders`;
+```
+
+| status |
+|--------|
+| Cancelled |
+| Processing |
+| Shipped |
+| Complete |
+| Returned |
+
+These statuses let us measure delivery performance, return rates, and customer satisfaction.
+
+With shipped_at and delivered_at, we can calculate average delivery time—a key KPI.
+
+### users — Who Are Our Customers?
+
+'''sql
+SELECT * FROM `bigquery-public-data.thelook_ecommerce.users` LIMIT 5;
+'''
+
+Demographics: age, gender, country, traffic_source.
+
+```sql
+SELECT DISTINCT traffic_source FROM `bigquery-public-data.thelook_ecommerce.users`;
+```
+
+| traffic_source |
+|----------------|
+| Facebook |
+| Search |
+| Email |
+| Organic |
+| Display |
