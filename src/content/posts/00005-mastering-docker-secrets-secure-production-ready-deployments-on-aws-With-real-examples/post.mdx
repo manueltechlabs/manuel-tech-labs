@@ -1,0 +1,197 @@
+---
+title: "Secure Docker Secrets on AWS: Real-World Guide"
+slug: mastering-docker-secrets-secure-production-ready-deployments-on-aws-With-real-examples
+heading: "Secure Docker Deployments on AWS Using Real-World Secrets Management"
+image: ./images/i0cnGJVwRlpzuiek.jpg
+permalink: mastering-docker-secrets-secure-production-ready-deployments-on-aws-With-real-examples
+date: 2025-12-22
+author: Manuel
+category: devops
+type: post
+tags: ['docker-secrets', 'devops', 'security', 'docker-compose', 'aws', 'container-security', 'software-engineering', 'production-ready']
+desc: "Secure Spring Boot + MySQL on AWS using Docker Secrets. No hardcoded passwords. Real-world config for secure, production-ready deployments."
+featuredAt: 2025-12-22
+---  
+
+# Mastering Docker Secrets: Secure, Production-Ready Deployments on AWS (With Real Examples)
+
+🔗 GitHub Repo: https://github.com/manueltechlabs/java-blog-project/tree/main
+
+In the world of containerized applications, security isn’t an afterthought—it’s the foundation. One of the most common (and dangerous) mistakes developers make? Hardcoding passwords, API keys, or database credentials directly into their apps or configuration files.
+
+But there’s a better way: Docker Secrets.
+
+In this post, I’ll walk you through how I securely deployed a Spring Boot application on AWS using Docker Compose, leveraging Docker secrets to protect sensitive data—no hardcoded passwords, no exposed environment variables, just clean, secure infrastructure.
+
+And yes—this isn’t theory. This setup is live, tested, and working flawlessly on AWS.
+
+## 🛠️ The Problem: Why Environment Variables Aren’t Enough
+
+Let’s be honest: it’s tempting to do this:
+
+'''yaml
+environment:
+  MYSQL_ROOT_PASSWORD: mysecretpassword
+'''
+
+But here’s the catch: anyone who runs docker inspect can see that password in plain text. Even worse, these values often sneak into logs, CI/CD pipelines, or version control.
+
+According to [Docker’s security guidelines](https://docs.docker.com/engine/security/), sensitive data should never be passed via environment variables in production.
+
+So what’s the alternative?
+
+👉 Docker Secrets.
+
+They’re mounted as files inside the container (typically under /run/secrets/), encrypted in transit, and never stored in the image layers. Plus, they’re only accessible to services that explicitly request them.
+
+## 📦 Real-World Example: My Spring Boot + MySQL Setup
+
+Here’s the actual stack I deployed on AWS:
+
+### ✅ Dockerfile (Spring Boot App)
+
+### `Dockerfile`
+```yaml
+FROM openjdk:21-jdk-oracle
+ARG JAR_FILE=target/app-0.0.1-SNAPSHOT.jar
+COPY $\{JAR_FILE\} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]   
+```
+
+Nothing fancy—clean, minimal, and built for Java 21. The app expects secrets at runtime, not baked in.
+
+### ✅ docker-compose.yml (The Secure Part)
+
+```yaml
+services:
+  database:
+    image: mysql:8.0.39
+    secrets:
+      - mysql_root_password    
+      - mysql_user
+      - mysql_password
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_USER_FILE: /run/secrets/mysql_user
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+    volumes:
+      - db-vol:/var/lib/mysql
+    networks:
+      - spring_net
+
+  webserver:
+    build: .
+    secrets:
+      - mysql_database
+      - mysql_user
+      - mysql_password
+      - mail_user
+      - mail_password
+    environment:
+      MYSQL_HOST: database
+      MYSQL_DATABASE: /run/secrets/mysql_database
+      MYSQL_USER: /run/secrets/mysql_user
+      MYSQL_PASSWORD: /run/secrets/mysql_password
+      MAIL_USER: /run/secrets/mail_user
+      MAIL_PASSWORD: /run/secrets/mail_password
+    depends_on:
+      - database    
+    networks:
+      - spring_net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3   
+```
+
+🔑 Notice the _FILE pattern? That’s a convention used by official images like MySQL and Spring Boot to read secrets from files instead of environment variables.
+
+### 🔑 How Docker Secrets Work in Practice
+
+1. Define secrets in docker-compose.yml:
+
+```yaml
+secrets:
+  mysql_password:
+    file: ./secrets/mysql_password.txt
+```
+
+2. Store actual values in local files (outside version control):
+
+```sh
+echo "s3cr3tP@ssw0rd!" > ./secrets/mysql_password.txt
+```
+
+3. Mount them securely at runtime: Docker automatically creates /run/secrets/mysql_password inside the container.
+
+4. Reference them via _FILE environment variables:
+
+```yaml
+environment:
+  MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+```
+
+## 🚀 Deployment on AWS: What You Don’t See (But Should)
+
+Before running docker-compose up, I made sure to:
+
+- ✅ Create external volumes (for persistence):
+
+```sh
+docker volume create db-vol
+```
+
+- ✅ Copy files to Docker volume
+
+```
+# mounts the templates-vol volume to the /templates directory in the temp-container
+docker create -v templates-vol:/templates --name temp-container busybox 
+docker cp templates/. temp-container:/templates
+docker rm temp-container  
+```
+
+- ✅ Set up a .gitignore to protect secrets:
+
+```yaml
+/secrets/
+*.txt
+```
+
+- ✅ Use --no-cache and multi-stage builds to avoid leaking data in image layers.
+
+- ✅ SSH into my AWS EC2 instance securely, transfer files via SCP, and deploy with a single command.
+
+No passwords in Git. No exposed configs. Just a secure, repeatable process.
+
+## 💡 Why This Matters for Your Infrastructure
+- ✅ Security First: Secrets are never in logs, images, or environment variables.
+- ✅ Compliance Ready: Meets basic requirements for data protection (GDPR, HIPAA, etc.).
+- ✅ Scalable: Works with Docker Compose today, Docker Swarm or Kubernetes tomorrow.
+- ✅ Developer-Friendly: Clear separation between code and config.
+
+## 🧩 Pro Tips that I want to try:
+
+These are promising practices I plan to implement in future projects for enhanced security.
+
+- Use BuildKit secrets if you need secrets during build time (e.g., private NPM packages).
+- Always run chmod 600 on secret files:
+
+```sh
+chmod 600 ./secrets/*.txt
+```
+This makes perfect sense as only the owner of the file will have read access to it.
+
+- Combine with AWS Systems Manager (SSM) or HashiCorp Vault for enterprise-grade secret management.
+- Scan your images with docker scan to catch accidental leaks.
+
+## 🏁 Final Thoughts
+Secure deployments don’t have to be complex. With Docker secrets, a well-structured docker-compose.yml, and a bit of discipline, you can run production-grade apps on AWS—without fear of credential leaks.
+
+This setup isn’t just secure. It’s proven. It’s live. And it’s yours to adapt.
+
+So next time you’re tempted to hardcode a password… stop. Use Docker secrets instead.
+
+🔐 Security isn’t a feature. It’s a standard.
+
+🔗 GitHub Repo: https://github.com/manueltechlabs/java-blog-project/tree/main
