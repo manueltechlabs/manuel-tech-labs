@@ -30,6 +30,13 @@ export const postCategories = {
     description: 'Thoughtful perspectives on AI, data ethics, digital rights, and the societal impact of technology—from censorship and digital ID to the future of creativity and control.',
     heading: 'Opinion: Where Tech Meets Society',
     metaDescription: 'Insightful takes on AI ethics, online freedom, and tech’s role in society. Explore the human side of data science and artificial intelligence.',
+  },
+        'devops': {
+    slug: 'devops',
+    name: 'DevOps',
+    description: 'Practical guides on containerization, Linux administration, secure deployments, and infrastructure automation. From Docker and AWS to system configuration and CI/CD — this is where development meets operations.',
+    heading: 'DevOps',
+    metaDescription: 'Explore DevOps best practices: Docker, Linux, AWS, and secure infrastructure automation.',
   },  
 
 } as const;
