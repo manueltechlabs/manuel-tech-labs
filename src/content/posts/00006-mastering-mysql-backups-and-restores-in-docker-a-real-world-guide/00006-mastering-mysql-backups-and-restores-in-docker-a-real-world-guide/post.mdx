@@ -1,0 +1,99 @@
+---
+title: "Mastering MySQL Backups & Restores in Docker: A Real-World Guide"
+slug: mastering-mysql-backups-and-restores-in-docker-a-real-world-guide
+heading: "Mastering MySQL Backups & Restores in Docker: A Real-World Guide"
+image: ./images/4m1hbtxE.jpg
+permalink: mastering-mysql-backups-and-restores-in-docker-a-real-world-guide
+date: 2025-12-22
+author: Manuel
+category: devops
+type: post
+tags: ['docker', 'mysql', 'database-backup', 'devops', 'spring-boot', 'mysqldump', 'docker-compose', 'ci/cd', 'data-persistence', 'cloud-dev']
+desc: "When you're running a Spring Boot app with Docker, your data is everything. Here’s how I handle MySQL backups and restores — the reliable way."
+featuredAt: 2025-12-31
+---  
+
+# 📦 Mastering MySQL Backups & Restores in Docker: A Real-World Guide
+
+🔗 GitHub Repo: https://github.com/manueltechlabs/java-blog-project/tree/main
+
+When you're running a Spring Boot app with Docker, your data is everything. Here’s how I handle MySQL backups and restores — the reliable way
+
+## ✅  Why Not Just Copy Volumes?
+
+Docker volumes are great for persistence, but they’re not backups. Copying a live database volume risks corruption.
+
+👉 Best practice: Use mysqldump and mysql — tools built for consistency.
+
+## ✅ The Setup: Non-Root User + Dedicated Database
+
+Docker Compose automatically creates the user and database:
+
+```yaml
+environment:
+  MYSQL_DATABASE: ${MYSQL_DATABASE}
+  MYSQL_USER: ${MYSQL_USER}
+  MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+  MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+```
+
+✅ This creates a non-root user with full access to only the specified database — secure and production-safe.
+
+## 🔄 Backup: From Container to Host
+
+Export your database to a .sql file on your host:
+
+```sh
+docker exec database mysqldump \
+  -u root \
+  --password=$(cat ./secrets/mysql_root_password.txt) \
+  $(cat ./secrets/mysql_database.txt) \
+  > backup-$(date +%F).sql
+```
+
+This gives you a portable, human-readable snapshot.
+
+## 🚀 Restore: From Host to Container
+
+Need to migrate or recover? Rebuild the DB in one go:
+
+```sh
+# First, ensure container is running
+docker-compose up -d database
+
+# Then import
+cat backup.sql | docker exec -i database mysql \
+  -u root \
+  --password=$(cat ./secrets/mysql_root_password.txt) \
+  $(cat ./secrets/mysql_database.txt)
+```
+
+- 🔐 Your secrets stay secure — no hardcoded passwords.
+
+## 🧠 Key Insights
+
+- No manual user setup needed — Docker’s MySQL image handles MYSQL_USER, MYSQL_DATABASE, and permissions automatically.
+- Backups are part of CI/CD — automate with cron or GitHub Actions.
+- Next step: Push .sql files to S3 or cloud storage — I haven’t done this yet, but it’s on my roadmap.
+
+## 💡 Pro Tip
+
+Always test your backups:
+
+```sh
+docker run -d --name mysql-test -e MYSQL_ROOT_PASSWORD=test mysql:8
+docker exec -i mysql-test mysql -u root -ptest -e "CREATE DATABASE IF NOT EXISTS test;"   
+docker exec -i mysql-test mysql -u root -ptest test < backup.sql
+# Check Data after import
+docker exec mysql-test mysql -u root -ptest -e "USE test; SHOW TABLES;"
+# Stop the running container
+docker stop mysql-test
+# Remove the container
+docker rm mysql-test
+# Remove the image
+docker rmi mysql:8
+```
+
+If it works here, it’ll work in production.
+
+🔗 GitHub Repo: https://github.com/manueltechlabs/java-blog-project/tree/main

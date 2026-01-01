@@ -1,0 +1,89 @@
+---
+title: "Chapter 3: Data Cleaning & Prep for Reliable Insights"
+slug: data-cleaning-and-preparation-setting-the-fundation-for-reliable-insights
+heading: "Data Cleaning & Preparation — Setting the Foundation for Reliable Insights"
+image: ./images/ndHeONvP.jpg
+permalink: data-cleaning-and-preparation-setting-the-fundation-for-reliable-insights
+date: 2026-12-01
+author: Manuel
+category: data-science
+type: post
+tags: [ 'data-analysis', 'ecommerce-analytics', 'big-query', 'data-cleaning', 'data-preparation', 'sql', 'data-integrity', 'missing-values', 'duplicate-check', 'data-analyst-portfolio' ]
+desc: "How I cleaned and prepared the TheLook dataset—handling missing values, duplicates, and ensuring data integrity for accurate KPIs."
+---   
+
+# Chapter 3: Data Cleaning & Preparation — Setting the Foundation for Reliable Insights
+
+Welcome back to Performance Metrics and Insights: A Data-Driven Analysis of TheLook. In the [second chapter](https://manueltechlabs.com/posts/exploring-the-thelook-ecommerce-database-a-data-analysts-first-steps/), we explored the tables of the database one by one using SQL to understand the context and the interrelation amond them as a pro datata analyst would do. Before diving into KPIs, we need clean, trustworthy data. In this post, I walk through how I prepared TheLook eCommerce dataset for analysis—spotting missing values, checking duplicates, and ensuring data integrity.
+
+## 1. Handling Missing Values
+I began by auditing the products and orders tables.
+
+### Products Table
+
+```sql
+SELECT 
+  COUNT(*) AS total_rows,
+  SUM(CASE WHEN cost IS NULL THEN 1 ELSE 0 END) AS missing_cost,
+  SUM(CASE WHEN category IS NULL THEN 1 ELSE 0 END) AS missing_category,
+  SUM(CASE WHEN name IS NULL THEN 1 ELSE 0 END) AS missing_name
+FROM `bigquery-public-data.thelook_ecommerce.products`;
+```
+
+| total_rows | missing_cost | missing_category | missing_name |
+|------------|--------------|------------------|--------------|
+| 29,120     | 0            | 0                | 2            |
+
+
+✅ No missing cost or category — critical for profitability analysis.
+
+⚠️ Two missing product names: For this analysis, I’ll leave them as-is since they don’t significantly impact overall metrics. However, in a real-world scenario, it would be essential to trace and correct these records—accurate product naming is critical for reporting, inventory management, and customer experience. Ignoring "Unknown Product" entries long-term could skew category analysis or marketing insights.
+
+### Orders Table
+
+```sql
+SELECT 
+  COUNT(*) AS total_rows,
+  SUM(CASE WHEN order_id IS NULL THEN 1 ELSE 0 END) AS missing_order_id,
+  SUM(CASE WHEN user_id IS NULL THEN 1 ELSE 0 END) AS missing_user_id,
+  SUM(CASE WHEN status IS NULL THEN 1 ELSE 0 END) AS missing_status,
+  SUM(CASE WHEN gender IS NULL THEN 1 ELSE 0 END) AS missing_gender
+FROM `bigquery-public-data.thelook_ecommerce.orders`;   
+```
+
+| total_rows | missing_order_id | missing_user_id | missing_status | missing_gender |
+|------------|------------------|-----------------|----------------|----------------|
+| 124,767    | 0                | 0               | 0              | 0              |
+
+✅ All key fields are complete — strong data integrity.
+
+## 2. Checking for Duplicates
+
+To ensure uniqueness, I checked for duplicate product IDs:
+
+```sql
+SELECT id, COUNT(*) AS count
+FROM `bigquery-public-data.thelook_ecommerce.products`
+GROUP BY id
+HAVING COUNT(*) > 1;
+```
+
+✅ No duplicates found — each product is uniquely identified.
+
+I also recommend checking for logical duplicates (e.g., same name and category) after cleaning:
+
+```sql
+SELECT name, category, COUNT(*)
+FROM `bigquery-public-data.thelook_ecommerce.products`
+WHERE name IS NOT NULL
+GROUP BY name, category
+HAVING COUNT(*) > 1;
+```
+
+## Why This Matters
+
+Clean data is the foundation of reliable KPIs. Missing values or duplicates can distort metrics like sales trends, conversion rates, or inventory turnover—especially when visualized in Tableau.
+
+With the dataset now validated, we’re ready to calculate Sales, Profitability, and Customer Experience KPIs in the next posts.
+
+👉 Next: “Chapter 4: Sales & Profitability — Beyond Revenue”
