@@ -1,0 +1,75 @@
+---
+title: "Chapter 4: Sales & Profitability — Beyond Revenue"
+slug: sales-&-profitability-beyond-revenue
+heading: "Chapter 4: Sales & Profitability — Modeling Financial Metrics in SQL"
+image: ./images/nBRC35Ue.jpg
+permalink: sales-&-profitability-beyond-revenue
+date: 2026-01-02
+author: Manuel
+category: data-science
+type: post
+tags: ['data-analysis', 'ecommerce-analytics', 'big-query', 'sql', 'data-preparation', 'data-integrity', 'financial-metrics', 'gross-profit-margin', 'data-analyst-portfolio']
+desc: "Learn how to calculate total sales and gross profit from eCommerce data using SQL."
+---   
+
+# Chapter 4: Sales & Profitability — Beyond Revenue
+
+Welcome back to Performance Metrics and Insights: A Data-Driven Analysis of TheLook. In the [third chapter](https://manueltechlabs.com/posts/data-cleaning-and-preparation-setting-the-fundation-for-reliable-insights/), we explored the critical role of data cleaning in preparing the TheLook database using SQL. Now, in this fourth release, we continue laying the groundwork by modeling key financial metrics—shifting from raw data to structured insights that will power our analysis and dashboards.
+
+Understanding revenue is just the beginning — true financial insight comes from analyzing profitability. In this chapter, we dive into the core metrics that reveal how efficiently TheLook converts sales into profit.
+
+## Total Sales: The Revenue Picture
+
+Total sales represent the top line of any eCommerce business. Using the order_items table in BigQuery, we sum the sale_price of all completed orders:
+
+```sql
+SELECT SUM(sale_price) AS total_sales
+FROM `bigquery-public-data.thelook_ecommerce.order_items`
+WHERE status = 'Complete';   
+```
+
+| total_sales     |
+|-----------|
+| 2711125.0 |
+
+This is the total revenue generated from successfully delivered orders — the foundation of our financial analysis.
+
+## Gross Profit & Margin: The Real Story
+
+Revenue alone doesn’t tell us if the business is healthy. We need to subtract the cost of goods sold (COGS) to calculate Gross Profit. By joining order_items with the products table, we access each product’s cost:
+
+```
+SELECT 
+  SUM(oi.sale_price) - SUM(p.cost) AS profit,
+  (SUM(oi.sale_price) - SUM(p.cost)) / SUM(oi.sale_price) AS margin
+FROM `bigquery-public-data.thelook_ecommerce.order_items` AS oi
+JOIN `bigquery-public-data.thelook_ecommerce.products` AS p 
+  ON p.id = oi.product_id
+WHERE oi.status = 'Complete';
+```
+
+| profit    | margin    |
+|-----------|-----------|
+| 1409012.0 | 0.519715  |
+
+This means TheLook retains over 51 cents in gross profit for every dollar of sales — a strong indicator of pricing efficiency and cost control.
+
+## Why This Matters
+
+A high gross margin suggests:
+
+- Effective pricing strategies
+- Healthy markup over product costs
+- Potential for reinvestment in marketing, logistics, or innovation
+
+Tracking this metrics over time can reveal trends in profitability, helping identify when costs rise or pricing needs adjustment.
+
+For a complete view, this analysis should be extended to category-level profitability, which we’ll explore in a previous chapter.
+
+## Pro Tip: Validate with the Source
+
+Before diving into analysis, validate your key metrics with the finance or accounting team. In this case, confirming the total sales and profit match with official records ensures your analysis is aligned with the business’s single source of truth.
+
+This step is often overlooked but critical — it builds trust, prevents rework, and ensures your dashboards reflect not just clean data, but correct data. As I’ve learned firsthand: no matter how elegant your SQL, if the numbers don’t match the books, your insights won’t land.
+
+ [👉 Next:]()
