@@ -1,0 +1,196 @@
+---
+title: "Chapter 3.5: Measuring Inventory & Supply Chain Efficiency"
+slug: measuring-inventory-&-supply-chain-efficiency-from-data-to-kpis
+heading: "Measuring Inventory & Supply Chain KPIs"
+image: ./images/JyZcbjg3.jpg
+permalink: measuring-inventory-&-supply-chain-efficiency-from-data-to-kpis
+date: 2026-01-06
+author: Manuel
+category: data-science
+type: post
+tags: ['inventory-turnover', 'supply-chain-analytics', 'sql-kpis', 'ecommerce-metrics', 'data-analysis', 'line-fill-rate', 'service-level','big-query']
+desc: "Discover how to calculate key supply chain metrics like Inventory Turnover, Fill Rate, and Service Level using SQL. Turn data into actionable insights."
+--- 
+
+# 📦 Chapter 3.5: Measuring Inventory & Supply Chain Efficiency — From Data to KPIs
+
+ [👉 Previous: ](/posts/advertising-&-marketing-sql-based-kpi-engineering)
+
+In this chapter, we translate core supply chain performance metrics into actionable SQL queries using BigQuery on the thelook-ecommerce dataset. We focus on Inventory Turnover, Inventory Level, Line Fill Rate, Case Fill Rate, and Service Level — essential KPIs that reveal how efficiently TheLook manages stock, fulfills orders, and meets customer demand.
+
+Each metric is derived from first principles, with clear alignment between business formula, SQL implementation, and real-world interpretation.
+
+## 🔁 Inventory Turnover: How Fast Is Stock Moving?
+
+Inventory turnover measures how many times inventory is sold and replaced over a period. A higher ratio indicates efficient inventory use.
+
+### 📘 Formula
+$$
+\text{Inventory Turnover} = \frac{\text{Cost of Goods Sold (COGS)}}{\text{Average Inventory}}
+$$
+
+### 💡 Translation to SQL
+- COGS: Sum of cost from inventory_items for order items with status = 'Complete' and shipped between 2019-01-08 and 2024-09-13.
+- Average Inventory: $$ \frac{\text{Beginning Inventory} + \text{Ending Inventory}}{2} $$
+  - Beginning (start_inventory): Items created before 2019-01-08 and not sold by that date.
+  - Ending (end_inventory): Items created before 2024-09-13 and not sold by that date.
+
+```sql
+WITH sales_cost AS (
+  SELECT SUM(ii.cost) AS total_sales_cost
+  FROM `bigquery-public-data.thelook_ecommerce.order_items` AS oi
+  JOIN `bigquery-public-data.thelook_ecommerce.inventory_items` AS ii
+    ON ii.id = oi.inventory_item_id
+  WHERE oi.status = 'Complete'
+    AND oi.shipped_at > '2019-01-08'
+    AND oi.shipped_at < '2024-09-13'
+),
+inventory_start AS (
+  SELECT SUM(ii.cost) AS start_inventory_cost
+  FROM `bigquery-public-data.thelook_ecommerce.inventory_items` AS ii
+  WHERE ii.created_at <= '2019-01-08'
+    AND (ii.sold_at > '2019-01-08' OR ii.sold_at IS NULL)
+),
+inventory_end AS (
+  SELECT SUM(ii.cost) AS end_inventory_cost
+  FROM `bigquery-public-data.thelook_ecommerce.inventory_items` AS ii
+  WHERE ii.created_at <= '2024-09-13'
+    AND (ii.sold_at > '2024-09-13' OR ii.sold_at IS NULL)
+)
+SELECT 
+  total_sales_cost,
+  (start_inventory_cost + end_inventory_cost) / 2 AS average_inventory,
+  total_sales_cost / ((start_inventory_cost + end_inventory_cost) / 2) AS inventory_turnover
+FROM sales_cost, inventory_start, inventory_end;   
+```
+
+### 📊 Results
+
+| total_sales_cost | average_inventory | inventory_turnover |
+|------------------|-------------------|--------------------|
+| 1,312,152        | 4,402,856         | 0.298              |
+
+### 📌 Insight: An inventory turnover of 0.30 over ~5.7 years implies very slow stock movement — only ~30% of average inventory sold annually. This suggests overstocking or weak demand.
+
+## 💰 Inventory Level: Capital Tied Up in Stock
+Inventory level (in cost) shows the financial value of unsold stock — a proxy for working capital efficiency.
+
+### 📘 Formula
+
+$$
+\text{Average Inventory} = \frac{\text{Beginning Inventory} + \text{Ending Inventory}}{2}
+$$
+
+### 💡 Translation to SQL
+
+We calculate beginning inventory value — all items created by 2019-01-08 that hadn’t been sold yet.
+
+```sql
+SELECT SUM(ii.cost) AS inventory_level
+FROM `bigquery-public-data.thelook_ecommerce.inventory_items` AS ii
+WHERE ii.created_at <= '2019-01-08'
+  AND (ii.sold_at > '2019-01-08' OR ii.sold_at IS NULL);
+```
+
+### 📊 Results
+
+| inventory_level |
+|-----------------|
+| 888,902.88      |
+
+### 📌 Insight: Nearly $889K was tied up in inventory at the start of our analysis window — a significant capital investment.
+
+## 🧩 Line Fill Rate: Are All Order Lines Shipped?
+Line fill rate measures the percentage of order lines shipped (not canceled).
+
+### 📘 Formula
+
+$$
+\text{Line Fill Rate} = \frac{\text{Number of Shipped Order Lines}}{\text{Total Non-Canceled Order Lines}}   
+$$
+
+### 💡 Translation to SQL
+We count lines where shipped_at IS NOT NULL, excluding canceled items.
+
+```sql
+SELECT 
+  AVG(CASE WHEN shipped_at IS NOT NULL THEN 1.0 ELSE 0 END) AS line_fill_rate
+FROM `bigquery-public-data.thelook_ecommerce.order_items`
+WHERE status != 'Cancelled';
+```
+
+### 📊 Results
+
+| line_fill_rate |
+|----------------|
+| 0.7655         |
+
+### 📌 Insight: 76.55% of non-canceled order lines were shipped — room for improvement in stock availability.
+
+## 📦 Case Fill Rate: How Much Value Was Fulfilled?
+Case fill rate uses sales value instead of line count — showing the proportion of order value shipped.
+
+### 📘 Formula
+
+$$
+\text{Case Fill Rate} = \frac{\sum \text{Sale Price of Shipped Items}}{\sum \text{Total Sale Price of Non-Canceled Items}}   
+$$
+
+### 💡 Translation to SQL
+Weight fulfillment by sale_price to reflect revenue impact.
+
+```sql
+SELECT 
+  SUM(CASE WHEN shipped_at IS NOT NULL THEN sale_price ELSE 0 END) / SUM(sale_price) AS case_fill_rate
+FROM `bigquery-public-data.thelook_ecommerce.order_items`
+WHERE status != 'Cancelled';
+```
+
+### 📊 Results
+
+| case_fill_rate |
+|----------------|
+| 0.7656         |
+
+### 📌 Insight: Nearly identical to line fill rate — fulfillment issues affect both unit and revenue equally.
+
+## 🚚 Service Level: Are Full Orders Delivered?
+Service level measures the percentage of entire orders shipped — a stricter metric than line-level fill rates.
+
+### 📘 Formula
+
+$$
+\text{Service Level} = \frac{\text{Number of Shipped Orders}}{\text{Total Non-Canceled Orders}}   
+$$
+
+### 💡 Translation to SQL
+We check shipped_at at the order level, not item level.
+
+```sql
+SELECT 
+  AVG(CASE WHEN shipped_at IS NOT NULL THEN 1.0 ELSE 0 END) AS service_level
+FROM `bigquery-public-data.thelook_ecommerce.orders`
+WHERE status != 'Cancelled';
+```
+
+### 📊 Results
+
+| service_level |
+|---------------|
+| 0.7641        |
+
+### 📌 Insight: 76.41% of non-canceled orders were shipped — slightly lower than line fill rate, indicating partial shipments are common.
+
+## 🔍 Key Takeaways
+
+| Metric               | Value    | Interpretation |
+|----------------------|----------|----------------|
+| **Inventory Turnover** | 0.298    | Very slow stock movement — potential overstocking |
+| **Inventory Level**    | $888,903 | High capital tied up in beginning inventory |
+| **Line Fill Rate**     | 76.55%   | 3 in 4 order lines fulfilled |
+| **Case Fill Rate**     | 76.56%   | Revenue fulfillment mirrors line fulfillment |
+| **Service Level**      | 76.41%   | Slight gap suggests partial order shipping |
+
+✅ Next Step: Use these KPIs in a data visualization tool to visualize trends, compare categories, and identify underperforming products or fulfillment centers.
+
+[👉 Next: Chapter 4 – ]()

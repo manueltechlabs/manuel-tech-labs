@@ -13,13 +13,13 @@ desc: "A data analyst's hands-on exploration of the theLook eCommerce dataset in
 featuredAt: 2025-12-16
 ---   
 
-# Chapter 2: Exploring the theLook eCommerce Database — A Data Analyst’s First Steps
+# 📘 Chapter 2: Exploring the theLook eCommerce Database — A Data Analyst’s First Steps
 
-Welcome back to Performance Metrics and Insights: A Data-Driven Analysis of TheLook. In the [first chapter](https://manueltechlabs.com/posts/unlocking-ecommerce-success-a-deep-dive-into-thelook-dataset/), we introduced the theLook eCommerce dataset—a rich, realistic, synthetic dataset perfect for practicing real-world analytics. Now, in this second chapter, I’ll walk you through how I explore an unfamiliar database, just as I would on the job.
+Welcome back to Performance Metrics and Insights: A Data-Driven Analysis of TheLook. In the [first chapter](/posts/unlocking-ecommerce-success-a-deep-dive-into-thelook-dataset/), we introduced the theLook eCommerce dataset—a rich, realistic, synthetic dataset perfect for practicing real-world analytics. Now, in this second chapter, I’ll walk you through how I explore an unfamiliar database, just as I would on the job.
 
 This isn’t just about writing queries—it’s about thinking like an analyst: asking the right questions, understanding business logic, and uncovering insights hidden in the schema.
 
-## Step 1: What Tables Are We Working With?
+## 🔍 Step 1: What Tables Are We Working With?
 
 First, I need to know what’s available. A quick INFORMATION_SCHEMA query reveals the structure:
 
@@ -38,13 +38,13 @@ FROM `bigquery-public-data.thelook_ecommerce.INFORMATION_SCHEMA.TABLES`;
 | orders |
 | events |
 
-✅ 7 core tables—a clean, normalized schema typical of modern eCommerce platforms.
+- ✅ 7 core tables—a clean, normalized schema typical of modern eCommerce platforms.
 
-## Step 2: Understand Each Table — One by One
+## 🧩 Step 2: Understand Each Table — One by One
 
 I start with the products table—because if we don’t know what’s being sold, we can’t analyze anything.
 
-### products Table
+### 👕 products Table
 
 ```sql
 SELECT * FROM `bigquery-public-data.thelook_ecommerce.products` LIMIT 5;   
@@ -66,7 +66,7 @@ FROM `bigquery-public-data.thelook_ecommerce.products`;
 
 📌 Insight: A highly diversified catalog—2,756 brands across 26 categories. This suggests a focus on variety, possibly including private labels.
 
-### distribution_centers Table
+### 🌍 distribution_centers Table
 
 ```sql
 SELECT * FROM `bigquery-public-data.thelook_ecommerce.distribution_centers`;
@@ -87,7 +87,7 @@ SELECT * FROM `bigquery-public-data.thelook_ecommerce.distribution_centers`;
 
 10 centers across the U.S., including major ports. This layout supports national and international shipping.
 
-### events Table — The Heart of User Behavior
+### 🔄 events Table — The Heart of User Behavior
 
 ```sql
 SELECT DISTINCT event_type FROM `bigquery-public-data.thelook_ecommerce.events`;
@@ -102,13 +102,14 @@ SELECT DISTINCT event_type FROM `bigquery-public-data.thelook_ecommerce.events`;
 | purchase |
 | cancel |
 
-📌 Business Logic Revealed:
+- 📌 Business Logic Revealed:
 
 - Users start at home.
 - Browse by department and product.
 - Add to cart.
 - purchase or cancel.
-- This is the conversion funnel in raw form.
+
+This is the conversion funnel in raw form.
 
 And the uri field? It’s even more telling:
 
@@ -126,9 +127,9 @@ WHERE event_type = 'department' LIMIT 5;
 | ... | ...|
 | department | /department/men/category/active/brand/columbia |
 
-🔍 The API is hierarchical: /department/\{gender\}/category/\{category\}/brand/\{brand\}. This is gold for funnel analysis and campaign tracking.
+- 🔍 The API is hierarchical: /department/\{gender\}/category/\{category\}/brand/\{brand\}. This is gold for funnel analysis and campaign tracking.
 
-### inventory_items — Tracking Stock Lifecycle
+### 📦 inventory_items — Tracking Stock Lifecycle
 
 ```sql
 SELECT * FROM `bigquery-public-data.thelook_ecommerce.inventory_items` LIMIT 5;
@@ -136,7 +137,7 @@ SELECT * FROM `bigquery-public-data.thelook_ecommerce.inventory_items` LIMIT 5;
 
 Key fields: created_at, sold_at, cost, product_distribution_center_id.
 
-### orders and order_items — The Transaction Core
+### 💳 orders and order_items — The Transaction Core
 
 ```sql
 SELECT DISTINCT status FROM `bigquery-public-data.thelook_ecommerce.orders`;
@@ -154,7 +155,7 @@ These statuses let us measure delivery performance, return rates, and customer s
 
 With shipped_at and delivered_at, we can calculate average delivery time—a key KPI.
 
-### users — Who Are Our Customers?
+### 🎯 users — Who Are Our Customers?
 
 '''sql
 SELECT * FROM `bigquery-public-data.thelook_ecommerce.users` LIMIT 5;
@@ -174,4 +175,4 @@ SELECT DISTINCT traffic_source FROM `bigquery-public-data.thelook_ecommerce.user
 | Organic |
 | Display |
 
- [ 👉 Next: “Chapter 3: Data Cleaning & Preparation — Setting the Foundation for Reliable Insights”](https://manueltechlabs.com/posts/data-cleaning-and-preparation-setting-the-fundation-for-reliable-insights/)
+ [ 👉 Next: “Chapter 3: Data Cleaning & Preparation — Setting the Foundation for Reliable Insights”](/posts/data-cleaning-and-preparation-setting-the-fundation-for-reliable-insights/)

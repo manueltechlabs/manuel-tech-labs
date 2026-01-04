@@ -139,6 +139,12 @@ const fullImageUrl = image.startsWith('http') ? image : `${siteConfig.siteUrl}${
       rel='sitemap'
       href='/sitemap-index.xml'
     />
+    <!-- Rendering math formulas -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+    />
+
     <!-- Additional head content slot -->
     <slot name='head' />
   </head>

@@ -1,0 +1,142 @@
+---
+title: "Chapter 3.3: Calculating Customer Experience KPIs"
+slug: customer-experience-measuring-satisfaction-through-data
+heading: "Chapter 3.3: Measuring Customer Experience in eCommerce"
+image: ./images/DJeTlOFy.jpg
+permalink: customer-experience-measuring-satisfaction-through-data
+date: 2026-01-03
+author: Manuel
+category: data-science
+type: post
+tags: ['customer-experience', 'ecommerce-analytics', 'delivery-time', 'return-rate', 'otif', 'supply-chain-metrics']
+desc: "Analyze key metrics like delivery time, return rate, and OTIF to assess customer satisfaction and logistics performance."
+--- 
+# 🌟 Chapter 3.3: Calculating Customer Experience KPIs
+
+ [👉 Previous: Chapter 3.2 – Sales & Profitability](/posts/sales-&-profitability-beyond-revenue)
+
+In the world of eCommerce, customer experience is a key differentiator. In this chapter of Performance Metrics and Insights: A Data-Driven Analysis of TheLook, we dive into core logistics and service metrics that directly reflect customer satisfaction: Average Delivery Time, Return Rate, and On-Time In-Full (OTIF) delivery.
+
+## 🚚⏱️ Average Delivery Time
+
+$$
+\text{Average Delivery Time} = \text{AVG}(\text{Delivered At} - \text{Created At})   
+$$
+
+```sql
+SELECT 
+  AVG(DATE_DIFF(o.shipped_at, o.created_at, HOUR)) AS avg_preparation_time_hours,
+  AVG(DATE_DIFF(o.delivered_at, o.shipped_at, HOUR)) AS avg_shipping_time_hours,
+  AVG(DATE_DIFF(o.returned_at, o.delivered_at, HOUR)) AS avg_return_time_hours,
+  AVG(DATE_DIFF(o.delivered_at, o.created_at, DAY)) AS avg_delivery_time_days
+FROM `bigquery-public-data.thelook_ecommerce.orders` AS o;
+```
+| avg_preparation_time_hours | avg_shipping_time_hours | avg_return_time_hours | avg_delivery_time_days |
+|----------------------------|-------------------------|-----------------------|------------------------|
+| 35.43652                   | 59.528189               | 35.645646             | 3.496137               |
+
+- Purpose: Measure end-to-end order fulfillment speed.
+- The average time from order placement to delivery for TheLook is 3.5 days. This includes approximately 1.5 days for order preparation and 2.5 days in transit.
+
+## 🔄 Return Rate
+
+$$
+\text{Return rate (\%)} = \left( \frac{\text{Number of returned orders}}{\text{Total number of orders}} \right) \times 100
+$$ 
+
+
+```sql
+SELECT 
+  AVG(CASE WHEN oi.status = 'Returned' THEN 1 ELSE 0 END) AS returned_units
+FROM `bigquery-public-data.thelook_ecommerce.order_items` AS oi
+WHERE oi.shipped_at IS NOT NULL;
+```
+
+| returned_units |
+|----------------|
+| 0.154931       |
+
+- Purpose: Quantify post-delivery customer dissatisfaction. A high return rate can signal product or fulfillment issues.
+
+## ✅ On-Time Delivery (OTD)
+
+$$
+\text{OTD (\%)} = \left( \frac{\text{Number of On-Time Deliveries}}{\text{Total Number of Deliveries}} \right) \times 100   
+$$
+
+```sql
+SELECT 
+  AVG(CASE WHEN oi.delivered_at IS NOT NULL THEN 
+    CASE WHEN DATE(oi.delivered_at) <= DATE(DATETIME_ADD(oi.created_at, INTERVAL 3 DAY)) THEN 1 ELSE 0 END 
+  ELSE 0 END) AS delivered_orders,
+  AVG(CASE WHEN DATE(oi.delivered_at) <= DATE(DATETIME_ADD(oi.created_at, INTERVAL 3 DAY)) THEN 1 ELSE 0 END) AS on_time_delivery
+FROM `bigquery-public-data.thelook_ecommerce.order_items` oi
+WHERE oi.shipped_at IS NOT NULL;   
+```
+
+| delivered_orders | on_time_delivery |
+|------------------|------------------|
+| 0.310896         | 0.310896         |
+
+- Assumption:
+    - On-time = delivered within 3 days
+
+## 📦✔️ In-Full Delivery
+
+$$
+\text{In-Full Rate (\%)} = \left( \frac{\text{Number of Complete Deliveries}}{\text{Total Number of Orders}} \right) \times 100
+$$
+
+```
+SELECT 
+  AVG(CASE WHEN oi.delivered_at IS NOT NULL AND oi.returned_at IS NULL THEN 1 ELSE 0 END) AS in_full_rate
+FROM `bigquery-public-data.thelook_ecommerce.order_items` AS oi
+WHERE oi.shipped_at IS NOT NULL;
+```
+
+| in_full_rate |
+|--------------|
+| 0.383009     |
+
+- Assumption:
+    - In-full = not returned (Since the dataset doesn’t specify whether an order was incomplete (e.g., missing items), "not returned" is used as an indicator for "in-full" — assuming that returned orders reflect incomplete or unsatisfactory deliveries.)
+
+## 🏆 On-Time In-Full (OTIF) Delivery
+
+$$
+\text{OTIF (\%)} = \left( \frac{\text{Number of On-Time and In-Full Deliveries}}{\text{Total Number of Orders}} \right) \times 100   
+$$
+
+
+```sql
+SELECT 
+  AVG(CASE WHEN oi.delivered_at IS NOT NULL AND oi.returned_at IS NULL 
+            AND DATE(oi.delivered_at) <= DATE(DATETIME_ADD(oi.created_at, INTERVAL 3 DAY)) 
+       THEN 1 ELSE 0 END) AS on_time_in_full_rate
+FROM `bigquery-public-data.thelook_ecommerce.order_items` AS oi
+WHERE oi.shipped_at IS NOT NULL;
+```
+
+| on_time_in_full_rate |
+|------------------------|
+| 0.222012               |
+
+- Assumptions:
+    - On-time = delivered within 3 days
+    - In-full = not returned (sustitute due to data constraints)
+
+OTIF is the gold standard for logistics performance, measuring orders that are both delivered on time and complete. For TheLook, the OTIF rate is 22.20%. Hight OTIF highlight potential gaps in inventory accuracy, shipping speed, or order completeness. Improving OTIF requires cross-functional efforts—from warehouse efficiency to demand forecasting. Even small gains here can boost customer retention and reduce operational costs.
+
+## 📌  Summary
+
+This chapter establishes clean, reusable SQL queries for:
+
+- Delivery Time
+- Return Rate
+- On-time delivery
+- In-full delivery
+- OTIF Delivery
+
+These will feed into Chapter 8: Data Analysis & Insights, where business context and recommendations will be explored. In the next chapter, we’ll explore how marketing efforts translate into traffic and conversions.
+
+[👉 Next: Chapter 3.4 – Advertising & Marketing SQL based KPI engineering](/posts/advertising-&-marketing-sql-based-kpi-engineering)

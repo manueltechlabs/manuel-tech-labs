@@ -1,10 +1,10 @@
 ---
-title: "Chapter 3: Data Cleaning & Prep for Reliable Insights"
+title: "Chapter 3.1: Data Cleaning & Prep for Reliable Insights"
 slug: data-cleaning-and-preparation-setting-the-fundation-for-reliable-insights
 heading: "Data Cleaning & Preparation — Setting the Foundation for Reliable Insights"
 image: ./images/ndHeONvP.jpg
 permalink: data-cleaning-and-preparation-setting-the-fundation-for-reliable-insights
-date: 2026-12-01
+date: 2026-01-01
 author: Manuel
 category: data-science
 type: post
@@ -12,14 +12,14 @@ tags: [ 'data-analysis', 'ecommerce-analytics', 'big-query', 'data-cleaning', 'd
 desc: "How I cleaned and prepared the TheLook dataset—handling missing values, duplicates, and ensuring data integrity for accurate KPIs."
 ---   
 
-# Chapter 3: Data Cleaning & Preparation — Setting the Foundation for Reliable Insights
+# 🔧 Chapter 3.1: Data Cleaning & Preparation — Setting the Foundation for Reliable Insights
 
-Welcome back to Performance Metrics and Insights: A Data-Driven Analysis of TheLook. In the [second chapter](https://manueltechlabs.com/posts/exploring-the-thelook-ecommerce-database-a-data-analysts-first-steps/), we explored the tables of the database one by one using SQL to understand the context and the interrelation amond them as a pro datata analyst would do. Before diving into KPIs, we need clean, trustworthy data. In this post, I walk through how I prepared TheLook eCommerce dataset for analysis—spotting missing values, checking duplicates, and ensuring data integrity.
+Welcome back to Performance Metrics and Insights: A Data-Driven Analysis of TheLook. In the [second chapter](/posts/exploring-the-thelook-ecommerce-database-a-data-analysts-first-steps/), we explored the tables of the database one by one using SQL to understand the context and the interrelation amond them as a pro datata analyst would do. Before diving into KPIs, we need clean, trustworthy data. In this post, I walk through how I prepared TheLook eCommerce dataset for analysis—spotting missing values, checking duplicates, and ensuring data integrity.
 
-## 1. Handling Missing Values
+## ❓ 1. Handling Missing Values
 I began by auditing the products and orders tables.
 
-### Products Table
+### 📦 Products Table
 
 ```sql
 SELECT 
@@ -39,7 +39,7 @@ FROM `bigquery-public-data.thelook_ecommerce.products`;
 
 ⚠️ Two missing product names: For this analysis, I’ll leave them as-is since they don’t significantly impact overall metrics. However, in a real-world scenario, it would be essential to trace and correct these records—accurate product naming is critical for reporting, inventory management, and customer experience. Ignoring "Unknown Product" entries long-term could skew category analysis or marketing insights.
 
-### Orders Table
+### 💰 Orders Table
 
 ```sql
 SELECT 
@@ -57,7 +57,7 @@ FROM `bigquery-public-data.thelook_ecommerce.orders`;
 
 ✅ All key fields are complete — strong data integrity.
 
-## 2. Checking for Duplicates
+## 🔁 2. Checking for Duplicates
 
 To ensure uniqueness, I checked for duplicate product IDs:
 
@@ -80,10 +80,10 @@ GROUP BY name, category
 HAVING COUNT(*) > 1;
 ```
 
-## Why This Matters
+## 🏗️ Why This Matters
 
 Clean data is the foundation of reliable KPIs. Missing values or duplicates can distort metrics like sales trends, conversion rates, or inventory turnover—especially when visualized in Tableau.
 
 With the dataset now validated, we’re ready to calculate Sales, Profitability, and Customer Experience KPIs in the next posts.
 
-👉 Next: “Chapter 4: Sales & Profitability — Beyond Revenue”
+👉 Next: [Chapter 3.2: Sales & Profitability — Beyond Revenue](/posts/sales-&-profitability-beyond-revenue/)

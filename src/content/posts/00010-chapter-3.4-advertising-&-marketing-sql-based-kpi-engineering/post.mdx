@@ -1,0 +1,109 @@
+---
+title: "Chapter 3.4: Advertising & Marketing — SQL-Based KPI Engineering"
+slug: advertising-&-marketing-sql-based-kpi-engineering
+heading: "Chapter 3.4: Engineering Marketing KPIs with SQL — From Raw Events to Actionable Metrics"
+image: ./images/i4HSARBg.jpg
+permalink: advertising-&-marketing-sql-based-kpi-engineering
+date: 2026-01-05
+author: Manuel
+category: data-science
+type: post
+tags: ['sql', 'ecommerce-analytics', 'marketing-kpis', 'data-engineering', 'big-query', 'conversion-rate', 'data-analysis', 'dashboarding']
+desc: "Learn how to engineer core marketing KPIs using SQL from raw event data in BigQuery."
+--- 
+
+# 📊 Chapter 3.4: Advertising & Marketing — SQL-Based KPI Engineering
+
+ [👉 Previous: Measuring Customer Experience](/posts/customer-experience-measuring-satisfaction-through-data)
+
+This chapter focuses on deriving marketing KPIs using SQL from the thelook_ecommerce dataset. Each metric is engineered for reusability in analysis and dashboarding.
+
+## 🛒 Session-Based Conversion Rate: Purchases / Total Sessions
+
+Measures the proportion of sessions that result in a purchase.
+
+Formula:
+$$
+\frac{\text{Sessions with Purchase}}{\text{Total Sessions}} \times 100
+$$
+
+SQL Logic:
+Aggregate events per session_id, flag sessions with 'purchase' events, then compute average.
+
+```sql
+WITH sessions AS (
+  SELECT 
+    session_id,
+    MAX(CASE WHEN event_type = 'purchase' THEN 1 ELSE 0 END) AS purchase_flag
+  FROM `bigquery-public-data.thelook_ecommerce.events`
+  GROUP BY session_id
+)
+SELECT 
+  AVG(purchase_flag) AS conversion_rate,
+  COUNT(*) AS total_sessions
+FROM sessions;
+```
+| conversion_rate | total_sessions |
+|-----------------|----------------|
+| 0.26606         | 681255         |
+
+- ✅ Insight: 26.6% of sessions convert to purchases — a strong baseline for funnel optimization.
+
+## 🧮 Event-Based Conversion Rate: Purchases / Total Events
+
+Measures how frequently all user interactions lead to a purchase.
+
+Formula:
+$$
+\frac{\text{Purchase Events}}{\text{Total Events}} \times 100
+$$
+
+SQL Logic:
+Count total events and purchase events directly.
+
+```sql
+SELECT
+  COUNTIF(event_type = 'purchase') / COUNT(*) AS conversion_rate,
+  COUNT(*) AS total_events
+FROM `bigquery-public-data.thelook_ecommerce.events`;   
+```
+
+| conversion_rate | total_events |
+|-----------------|--------------|
+| 0.07475         | 2427583      |
+
+- ⚠️ Note: Lower than session-based rate — expected, as most events are non-transactional (e.g., views).
+
+## 🛍️ Upstream Funnel Metrics: Cart & Product View Rates
+
+Extend the session model to track engagement depth.
+
+```
+WITH sessions AS (
+  SELECT 
+    session_id,
+    MAX(CASE WHEN event_type = 'purchase' THEN 1 ELSE 0 END) AS purchase_flag,
+    MAX(CASE WHEN event_type = 'cart' THEN 1 ELSE 0 END) AS cart_flag,
+    MAX(CASE WHEN event_type = 'product' THEN 1 ELSE 0 END) AS product_flag
+  FROM `bigquery-public-data.thelook_ecommerce.events`
+  GROUP BY session_id
+)
+SELECT
+  AVG(purchase_flag) AS conversion_rate,
+  AVG(cart_flag) AS cart_rate,
+  AVG(product_flag) AS product_view_rate,
+  COUNT(*) AS total_sessions
+FROM sessions;
+```
+
+| conversion_rate | cart_rate | product_view_rate | total_sessions |
+|-----------------|---------|-------------------|----------------|
+| 0.26606         | 0.63266 | 1.0               | 681255         |
+
+- 🔍 Insight: 63.3% of sessions include cart interaction — opportunity to improve cart-to-purchase flow.
+
+##   📌 Summary
+
+This chapter demonstrates how to engineer key marketing KPIs using SQL on the thelook_ecommerce dataset. It covers the calculation of session-based and event-based conversion rates, along with upstream funnel metrics like cart and product view rates. Each query is designed for reusability in both analytical workflows and dashboard development, providing a solid foundation for data-driven marketing insights.
+
+[👉 Next: Chapter 3.5 – Measuring Inbentory and Supply Chain](/posts/measuring-inventory-&-supply-chain-efficiency-from-data-to-kpis)
