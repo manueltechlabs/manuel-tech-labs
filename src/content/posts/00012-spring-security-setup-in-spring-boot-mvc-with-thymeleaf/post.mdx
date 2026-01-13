@@ -1,0 +1,153 @@
+---
+title: "Part 1: Spring Security Setup in Spring Boot MVC with Thymeleaf"
+slug: spring-security-setup-in-spring-boot-mvc-with-thymeleaf
+heading: "Setting Up Spring Security in a Spring Boot MVC App with Thymeleaf"
+image: ./images/WKeSbPEU.jpg
+permalink: spring-security-setup-in-spring-boot-mvc-with-thymeleaf
+date: 2026-01-12
+author: Manuel
+category: software-development
+type: post
+tags: ['spring-security', 'spring-boot-mvc', 'thymeleaf-security', 'securityfilterchain', 'spring-boot-login', 'csrf-protection-spring', 'remember-me-spring-security', 'spring-method-security']
+desc: "Learn how to set up Spring Security in a Spring Boot MVC app using Thymeleaf. SecurityFilterChain, form login, CSRF protection, and remember-me functionality."
+featuredAt: 2025-01-12
+---  
+# 🚀 Part 1: Spring Security Setup in Spring Boot MVC with Thymeleaf
+Welcome to the first part of our series on building secure Java web apps with Spring Security! If you're developing a modern web application, security isn't optional — it's essential. In this post, we’ll walk through setting up Spring Security in a Spring Boot MVC app using Thymeleaf, focusing on the core of your app’s defense: the SecurityFilterChain.
+
+Let’s get started!
+
+🔗 GitHub Repo: https://github.com/manueltechlabs/java-blog-project/tree/main
+
+## 📦 Step 1: Add the Right Dependencies
+
+To secure your Spring Boot app, you need the right tools. Here’s what to include in your pom.xml:
+
+### `pom.xml`
+```xml
+<dependencies>
+    <!-- Web & MVC -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- Thymeleaf Templates -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+
+    <!-- Spring Security -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+    <!-- Security Dialect for Thymeleaf -->
+    <dependency>
+        <groupId>org.thymeleaf.extras</groupId>
+        <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+    </dependency>
+</dependencies>   
+```
+
+- ✅ Why these?
+
+spring-boot-starter-security auto-configures secure defaults.
+Thymeleaf extras let you use sec:authorize in HTML to show/hide UI elements based on user roles.
+
+## 🔐 Step 2: Configure SecurityFilterChain
+This is where the magic happens. The SecurityFilterChain defines who can access what in your app.
+
+Here’s a clean, production-ready setup:
+
+### `SecurityConfig.java`
+```java
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            // Public pages
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/css/**", "/js/**", "/img/**", "/login", "/register").permitAll()
+                .requestMatchers("/profile/**").authenticated()
+                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                .anyRequest().permitAll()
+            )
+            // Login
+            .formLogin(form -> form
+                .loginPage("/login")
+                .usernameParameter("email")
+                .passwordParameter("password")
+                .failureUrl("/login?error")
+                .permitAll()
+            )
+            // Logout
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+            )
+            // Remember-Me
+            .rememberMe(remember -> remember
+                .key("uniqueAndSecret")
+                .tokenValiditySeconds(86400)
+            )
+            // Session
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+            )
+            // Security Headers
+            .headers(headers -> headers
+                .xssProtection(xss -> xss.headerValue(ENABLED_MODE_BLOCK))
+                .contentSecurityPolicy(cps -> cps
+                    .policyDirectives("script-src 'self' https: 'unsafe-inline'; style-src 'self' https: 'unsafe-inline'"))
+            );
+
+        return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+```
+
+| Feature | Why It Matters |
+|-------|----------------|
+| **`@EnableMethodSecurity`** | Enables `@PreAuthorize`, `@Secured`, etc., for fine-grained control |
+| **Form Login** | Custom login with email/password fields |
+| **CSRF Protection** | Enabled by default — Thymeleaf auto-includes tokens |
+| **Remember-Me** | Persistent login (30 days) |
+| **Session Management** | Full control over session lifecycle |
+| **Security Headers** | Blocks XSS and enforces safe content loading |
+
+## 💡 Pro Tip: Never Disable CSRF in Production
+You might be tempted to add .csrf().disable() — don’t. It opens your app to attacks. Instead, ensure your forms include the CSRF token:
+
+### `login.html`
+```html
+<form th:action="@{/login}" method="post">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <!-- rest of form -->
+</form>   
+```
+Thymeleaf does this automatically when using th:action.
+
+## 🧩 What’s Next?
+We’ve laid the foundation. In upcoming chapters, we’ll dive into:
+
+- Password handling with char[] vs String
+- Role hierarchies and granular privileges
+- Secure user registration and profile management
+
+[👉 Next: Part 2 – Securing Sensitive Data: Why char[] Over String for Passwords]()
+
+🔗 GitHub Repo: https://github.com/manueltechlabs/java-blog-project/tree/main
