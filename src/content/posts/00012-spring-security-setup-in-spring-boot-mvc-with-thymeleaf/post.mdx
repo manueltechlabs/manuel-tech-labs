@@ -141,6 +141,15 @@ You might be tempted to add .csrf().disable() — don’t. It opens your app to 
 ```
 Thymeleaf does this automatically when using th:action.
 
+### ✅ When It’s Safe to Disable CSRF:
+- You’re using JWT or token-based auth (no session cookies).
+- Requests include an Authorization: Bearer \<token\> header.
+- The backend does not rely on cookies for authentication.
+### ❌ When You Must Keep CSRF Enabled:
+- Using session-based auth (e.g., JSESSIONID cookie).
+- Spring Security manages login via form or HttpSession.
+- Your app is vulnerable to CSRF attacks because browsers auto-send cookies.
+
 ## 🧩 What’s Next?
 We’ve laid the foundation. In upcoming chapters, we’ll dive into:
 
@@ -148,6 +157,6 @@ We’ve laid the foundation. In upcoming chapters, we’ll dive into:
 - Role hierarchies and granular privileges
 - Secure user registration and profile management
 
-[👉 Next: Part 2 – Securing Sensitive Data: Why char[] Over String for Passwords]()
+[👉 Next: Part 2 – Securing Sensitive Data: Why char[] Over String for Passwords](/posts/why-i-used-char[]-for-passwords-in-spring-security-and-what-i-learned)
 
 🔗 GitHub Repo: https://github.com/manueltechlabs/java-blog-project/tree/main

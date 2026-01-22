@@ -1,0 +1,179 @@
+---
+title: "Part 2: Why I Chose char[] for Passwords — And What I Learned"
+slug: why-i-used-char[]-for-passwords-in-spring-security-and-what-i-learned
+heading: "Why I Chose char[] for Passwords — And What I Learned"
+image: ./images/P0nVCOqI.jpg
+permalink: why-i-used-char[]-for-passwords-in-spring-security-and-what-i-learned
+date: 2026-01-22
+author: Manuel
+category: software-development
+type: post
+tags: ['spring-security', 'java-security', 'web-security', 'password-security', 'spring-boot', 'char-array', 'security-best-practices', 'secure-coding', 'memory-safety', 'authentication']
+desc: "I used char[] for passwords in my Spring app. Here’s why it’s not a magic bullet — and what actually matters for security."
+featuredAt: 2025-01-22
+---  
+# 🚀 Part 2: Why I Chose char[] for Passwords — And What I Learned
+
+Welcome back to the Spring Security series! 👋
+In [Chapter 1](/posts/spring-security-setup-in-spring-boot-mvc-with-thymeleaf), we set up Spring Security with SecurityFilterChain, CSRF, and session management. Now, let’s talk about a subtle but important detail: how we handle passwords in memory. 
+
+🔗 GitHub Repo: https://github.com/manueltechlabs/java-blog-project/tree/main
+
+## 🧠 The Rationale: Why char[] Makes Sense
+Java has long recommended using char[] over String for passwords — and there’s good reason:
+
+| Advantage | Explanation |
+|---------|-------------|
+| 🔁 Mutability | You can overwrite a `char[]` with `Arrays.fill(pwd, '0')`, reducing memory exposure. |
+| 🚫 No String Pool Risk | String objects live in the heap and may persist until garbage collection — dangerous if someone takes a memory dump. |
+| 📵 Safer Logging | Printing a `char[]` shows `[C@hash`, not the actual password — helpful if logs are exposed. |
+
+Even JPasswordField.getPassword() returns char[] — Java itself trusts this pattern[^1].
+
+## 🔍 My Implementation
+
+Here’s how I used it in the Password entity:
+
+```java
+@Entity
+public class Password {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long passwordId;
+
+    @NotEmpty(message = "Password missing")
+    private char[] word;
+
+    private String resetToken;
+    private LocalDateTime resetTokenExpiry;
+
+    public Password(char[] word) {
+        this.word = word;
+    }
+
+    // Clear password from memory after use
+    public void clear() {
+        if (this.word != null) {
+            Arrays.fill(this.word, '\0');
+        }
+    }
+}
+```
+
+In the controller:
+
+
+```java
+@Controller
+public class AccountController {
+    
+    @Autowired
+    AccountService accountService;
+
+    @Autowired
+    PasswordService passwordService;
+
+@PostMapping("/register")
+    public String registerPost(
+        @RequestParam("file") MultipartFile file,
+        @Valid @ModelAttribute Account account,
+        BindingResult resultAccount,
+        @Valid @ModelAttribute Password password,
+        BindingResult resultPassword        
+    ) {
+        // check that email is not already taken
+        Optional<Account> optionalAccount = accountService.findOneByEmail(account.getEmail());
+        if(optionalAccount.isPresent()) {
+            resultAccount.rejectValue("email","error.email", "This email address is already in use");            
+        }
+
+        // checking both resultAccount or resultPassword don't have errors
+        if (resultAccount.hasErrors() | resultPassword.hasErrors()) {
+
+            return "accountView/register";
+        }
+
+        if(!file.isEmpty()) {
+            System.out.println("file: " + file);
+            account.setProfilePicture(FileStorage.save(file, "userImg"));
+            FileStorage.waitt();
+        }
+        passwordService.save(password);
+        account.setPassword(password);
+        accountService.save(account);
+        return "redirect:/";
+    }
+}
+```
+
+And in service logic:
+
+```java
+@Service("passwordService")
+public class PaswordServiceImpl implements PasswordService {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    PasswordRepository passwordRepository;
+
+    @Override
+    public void save(Password password) {
+        try {
+            password.setWord(passwordEncoder.encode(CharBuffer.wrap(password.getWord())).toCharArray());
+            passwordRepository.save(password);
+        } finally {
+            password.clear();
+        }
+    }
+    @Override
+    public boolean checkPassword(Password password, char[] keyWord) {
+        try {
+            return passwordEncoder.matches(String.valueOf(keyWord), String.valueOf(password.getWord()));
+        } finally {
+            if(keyWord != null) {
+                Arrays.fill(keyWord, '\0');
+                password.clear();
+            }
+        }        
+    }
+    
+}
+
+```
+
+## ⚠️ Framework Limitations
+Despite best intentions, Spring Security doesn’t fully support char[]. 
+
+As reported in [spring-projects/spring-security#17830](https://github.com/spring-projects/spring-security/issues/17830):
+
+    “From a security perspective, it is recommended to use char[] to avoid leaving password values in immutable String objects in memory.” [^2]
+
+But:
+
+- UsernamePasswordAuthenticationToken expects String or CharSequence.
+- Form data binding often creates String before your code runs. 
+
+So while char[] helps within your domain, the framework ecosystem limits its full benefit. 
+
+### ✅ What Still Matters
+
+Even with these constraints:
+
+- ✅ I control when and where the password lives.
+- ✅ I can clear it explicitly after hashing.
+- ✅ I reduce accidental logging risks. 
+
+It’s not perfect — but it’s better than doing nothing.
+
+
+[👉 Next Up: Chapter 3 — User Registration & Default Roles]()
+We’ll walk through how new users get auto-assigned ROLE_SUBSCRIBER, complete with registration timestamp and default profile picture — all securely handled.
+
+Stay tuned!
+
+🔗 GitHub Repo: https://github.com/manueltechlabs/java-blog-project/tree/main
+
+[^1]:https://stackoverflow.com/questions/8881291/why-is-char-preferred-over-string-for-passwords
+[^2]:https://github.com/spring-projects/spring-security/issues/17830
