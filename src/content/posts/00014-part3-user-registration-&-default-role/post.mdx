@@ -1,0 +1,219 @@
+---
+title: "Part 3: User Registration & Default Role"
+slug: user-registration-&-default-role
+heading: "User Registration & Default Roles in Spring Security | Part 3"
+image: ./images/7wgPHSvG.jpg
+permalink: user-registration-&-default-role
+date: 2026-01-27
+author: Manuel
+category: software-development
+type: post
+tags: ['spring-security', 'user-registration', 'role-based-access', 'spring-boot', 'web-security', 'java', 'production-ready', 'authentication']
+desc: "Learn how to implement secure user registration with default role in Spring Boot. Full code walkthrough for production-ready apps."
+featuredAt: 2026-01-27
+---  
+# 🚀 Part 3: User Registration & Default Roles in Spring Security
+
+Welcome back to our "Building Secure Java Web Apps with Spring Security" series!  In [Part 2](/posts/), we explored why char[] is preferred over String for handling passwords in memory — emphasizing immutability risks and memory exposure. Today, we dive into the user registration workflow, where new users are automatically assigned the ROLE_SUBSCRIBER and gain access to core features while maintaining a secure, production-ready foundation. 
+
+This step is critical: it's the first interaction users have with your system, and doing it right ensures security, scalability, and a smooth UX — all while aligning with real-world deployment standards.
+
+🔗 GitHub Repo: https://github.com/manueltechlabs/java-blog-project/tree/main
+
+## 🧩 1. Registering a New User: The Full Flow
+Our registration process includes:
+
+- Public /register endpoint
+- Email uniqueness check
+- Default role assignment (ROLE_SUBSCRIBER)
+- Secure password hashing
+- Profile picture upload
+- Automatic timestamps
+
+Let’s walk through the full implementation. 
+
+## 🔧 2. Security Configuration: Permitting Public Access
+
+In SecurityConfig, we allow unauthenticated access to the registration page and static assets:
+
+```java
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/css/**", "/js/**", "/img/**", "/register").permitAll()
+            .anyRequest().authenticated()
+        )
+        .formLogin(form -> form
+            .loginPage("/login")
+            .permitAll()
+        )
+        .csrf(csrf -> csrf.ignoringRequestMatchers("/register")); // Or enable CSRF safely
+
+    return http.build();
+}
+```
+
+> ✅ Best Practice: Always explicitly permit /register. CSRF can remain enabled — just include the token in your Thymeleaf form (more below). 
+
+## 🖥️ 3. Registration Form (Thymeleaf + HTML)
+
+### `register.html` uses Thymeleaf for model binding and validation:
+
+```html
+<form th:action="@{/register}" method="post" enctype="multipart/form-data">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+    <div class="form-group">
+        <label>First Name</label>
+        <input type="text" class="form-control" th:field="*{account.firstName}" required />
+        <p class="alert alert-danger" th:if="${#fields.hasErrors('account.firstName')}" th:errors="*{account.firstName}">Error</p>
+    </div>
+
+    <div class="form-group">
+        <label>Email</label>
+        <input type="email" class="form-control" th:field="*{account.email}" required />
+        <p class="alert alert-danger" th:if="${#fields.hasErrors('account.email')}" th:errors="*{account.email}">Error</p>
+    </div>
+
+    <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" th:field="*{password.word}" required />
+        <p class="alert alert-danger" th:if="${#fields.hasErrors('password.word')}" th:errors="*{password.word}">Error</p>
+    </div>
+
+    <div class="form-group">
+        <label>Profile Picture</label>
+        <input type="file" name="file" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+</form>   
+```
+
+> 🔐 Security Note: Always include CSRF token:
+
+```html
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />   
+```
+
+## ⚙️ 4. Controller: Handling Registration Logic
+
+### `AccountController.java` manages the registration flow with validation and file handling:
+
+```java
+@PostMapping("/register")
+public String registerPost(
+    @RequestParam("file") MultipartFile file,
+    @Valid @ModelAttribute Account account,
+    BindingResult resultAccount,
+    @Valid @ModelAttribute Password password,
+    BindingResult resultPassword
+) {
+    // Prevent duplicate emails
+    if (accountService.findOneByEmail(account.getEmail()).isPresent()) {
+        resultAccount.rejectValue("email", "error.email", "Email already in use");
+    }
+
+    if (resultAccount.hasErrors() || resultPassword.hasErrors()) {
+        return "accountView/register";
+    }
+
+    // Handle profile picture
+    if (!file.isEmpty()) {
+        String filename = FileStorage.save(file, "userImg");
+        account.setProfilePicture("/img/userImg/" + filename);
+    }
+
+    // Save password and assign to account
+    passwordService.save(password);
+    account.setPassword(password);
+
+    // Auto-assign ROLE_SUBSCRIBER
+    account.setRoles(new HashSet<>(Arrays.asList(roleService.findByName("ROLE_SUBSCRIBER"))));
+
+    accountService.save(account);
+    return "redirect:/login?registered";
+}   
+```
+
+> ✅ Key Feature: New users get ROLE_SUBSCRIBER by default — perfect for comment access without admin privileges.
+
+## 🛡️ 5. Secure File Upload & Validation
+
+FileValidator class:
+
+| Feature | Implementation |
+|-------|----------------|
+| **File Type Validation** | Only allows `image/jpeg`, `image/png` |
+| **Size Limit** | Enforces 500KB max (`MAX_FILE_SIZE = 500*1024`) |
+| **Filename Sanitization** | Strips `..`, `/`, `&` to block path traversal |
+| **Directory Escape Prevention** | Uses `resolvePath()` with canonical path check |
+
+### 🔍 Key Code: FileValidator.validateFile()
+
+```java
+public static String validateFile(MultipartFile file) {
+    if (file == null || file.isEmpty()) {
+        return "File is empty!";
+    }
+
+    String contentType = file.getContentType();
+    if (!ALLOWED_FILE_TYPES.contains(contentType)) {
+        return "File type not valid!";
+    }
+
+    if (file.getSize() > MAX_FILE_SIZE) {
+        return "File size must be less than 500KB!";
+    }
+
+    return "OK";
+}
+```
+
+## 💾 6. Service Layer: Auto-Assign Role & Timestamps
+In AccountServiceImpl.save(), we ensure defaults are applied:
+### `AccountServiceImpl.java`
+
+```java
+@Override
+public Account save(Account account) {
+    if (account.getRegisteredAt() == null) {
+        account.setRegisteredAt(LocalDateTime.now());
+    }
+
+    if (account.getProfilePicture() == null) {
+        account.setProfilePicture("/img/userImg/default.svg");
+    }
+
+    if (account.getRoles() == null || account.getRoles().isEmpty()) {
+        Role subscriber = roleService.findByName("ROLE_SUBSCRIBER");
+        account.setRoles(new HashSet<>(Arrays.asList(subscriber)));
+    }
+
+    return accountRepository.save(account);
+}
+```
+
+This ensures every user starts with:
+
+- Registration timestamp
+- Default avatar
+- ROLE_SUBSCRIBER role
+
+🔗 GitHub Repo: https://github.com/manueltechlabs/java-blog-project/tree/main
+
+### 📚 What’s Next?
+In [Part 4: Password Recovery via Email](), we’ll implement a secure password reset flow using:
+
+- Token generation with expiry
+- JavaMailSender integration
+- Thymeleaf email templates
+- Secure reset endpoint validation
+
+We’ll also cover how to prevent token reuse and lockout mechanisms — essential for any production system.
+
+## 💡 Final Thought:
+User registration isn’t just a form — it’s the foundation of your security model. By combining Spring Security, proper defaults, and server-side enforcement, you create a system that’s both user-friendly and resilient. 
+
+Keep coding securely — and see you in [Part 4!]() 🔐
