@@ -1,0 +1,150 @@
+---
+title: "Chapter 4.1: How Demographics Influence Customer Behavior"
+slug: how-age-gender-and-location-influence-customer-behavior
+heading: "Decoding Cancellation Rates — Age, Gender & Location"
+image: ./images/3sWZyqiH.jpg
+permalink: how-age-gender-and-location-influence-customer-behavior
+date: 2026-03-12
+author: Manuel
+category: data-science
+type: post
+tags: ['ecommerce-analytics', cancellation-rate-analysis', 'customer-behavior', 'data-storytelling', 'z-test', 'statistical-significance', 'age-group-impact', 'gender-analysis', 'regional-trends', 'inferential-statistics']
+desc: "The analysis demonstrates a robust statistical methodology using z-tests and GLM modeling to evaluate cancellation rates across demographics."
+---
+import EChartsBar from '@/components/EChartsBar.jsx';
+
+# 📊 Chapter 4.1: Decoding Cancellation Rates — How Age, Gender & Location Influence Customer Behavior
+
+Welcome back! In the [previous chapter](/posts/measuring-inventory-&-supply-chain-efficiency-from-data-to-kpis/), we laid the foundation for robust data analysis by cleaning and preparing the TheLook eCommerce dataset, transforming raw data into a reliable asset for actionable insights. Now, we dive into Chapter 4.1: Decoding Cancellation Rates — Age, Gender & Location, where we apply inferential statistics to uncover patterns behind customer behavior. The analysis demonstrates a robust statistical methodology using z-tests and GLM modeling to evaluate cancellation rates across demographics. However, since the data is synthetic, observed patterns—such as higher cancellation rates in older age groups or regional differences—should not be interpreted as real-world behavioral insights. Instead, this post highlights how to apply inferential statistics to customer data, emphasizing hypothesis testing, confidence intervals, and model interpretation in a controlled environment. The goal is to showcase analytical rigor, not to draw definitive business conclusions. 
+
+## 🔍 Why Use a Z-Test for Cancellation Rates?
+
+In large eCommerce datasets, proportions like cancellation rates can be compared using a two-sample z-test, which is ideal when:
+
+- Sample sizes are large (n > 30 per group)
+- Data follows a binomial distribution (canceled vs. not canceled)
+- We want to test if two population proportions differ significantly 
+
+The z-test leverages the Central Limit Theorem, ensuring that the sampling distribution of the proportion is approximately normal, even if the underlying data isn't.
+
+```python
+from statsmodels.stats.proportion import proportions_ztest
+
+# Example: Compare male vs. female cancellation rates
+counts = [cancelations_male, cancelations_female]
+nobs = [orders_male, orders_female]
+
+z_stat, p_val = proportions_ztest(counts, nobs)
+print(f"Z-statistic: {z_stat:.3f}, P-value: {p_val:.3f}")   
+```
+
+## 🧪 Hypothesis Testing Framework
+
+- Null Hypothesis (H₀): Cancellation rates for males and females are equal.
+- Alternative Hypothesis (H₁): Cancellation rates differ between genders. 
+
+With a p-value of 0.284, we fail to reject H₀ — no significant difference exists in overall cancellation behavior by gender. 
+
+However, two months showed significance:
+
+- September 2023 (p = 0.034)
+- May 2024 (p = 0.043)
+
+This suggests short-term behavioral shifts possibly due to promotions, stock issues, or UX changes.
+
+<EChartsBar
+  title="Cancellation Rate by Gender"
+  categories={['Male', 'Female']}
+  values={[0.35, 0.353]}
+  seriesName="Cancellation Rate"
+  color='#fac858'
+  yMax={0.5}
+  showLabels={true}
+  client:only="react"
+/>
+
+## 📈 Cancellation Trends by Demographics
+
+### Age Group Impact
+
+<EChartsBar
+  title="Cancellation Rate by Age Group"
+  categories={['Youth', 'Early Adulthood', 'Middle Adulthood', 'Young Old', 'Old Old']}
+  values={[0.32, 0.36, 0.35, 0.38, 0.41]}
+  seriesName="Cancellation Rate"
+  color='#5470C6'
+  yMax={0.5}
+  showLabels={true}
+  client:only="react"
+/>
+
+    -💡 Insight: Older customers show higher cancellation rates — possibly due to stricter quality expectations or fit concerns.
+
+### Country Comparison (Top 3)
+
+<EChartsBar
+  title="Cancellation Rate by Country"
+  categories={['China', 'USA', 'Brazil']}
+  values={[0.4, 0.35, 0.37]}
+  seriesName="Cancellation Rate"
+  color='#91CC75'
+  yMax={0.5}
+  showLabels={true}
+  client:only="react"
+/>
+
+China’s higher rate may reflect competitive market dynamics or fulfillment delays. 
+
+## 🌍 Business Implications
+
+| Factor      | Before → Change → Reason → Impact |
+|-----------|----------------------------------|
+| **Age**     | High cancellations in seniors → Targeted product quality assurance → Older users expect premium fit/quality → Reduced returns and improved NPS |
+| **Gender**  | Suspected gender bias → No significant difference found → Behavior is similar across genders → No need for gender-specific campaigns |
+| **Location**| High cancel rate in China → Investigate logistics partners → Delays in last-mile delivery → Partner with local fulfillment centers |
+
+### 🧮 Confidence Interval Example (Python)
+
+```sql
+from statsmodels.stats.proportion import proportion_confint
+
+# 95% CI for female cancellation rate
+ci_lower, ci_upper = proportion_confint(cancelations_female, orders_female, alpha=0.05)
+print(f"95% CI: [{ci_lower:.3f}, {ci_upper:.3f}]")   
+```
+
+### 💬 SQL: Extract Cancellation Rates by Demographics
+
+```sql
+SELECT
+  CASE 
+    WHEN u.age < 20 THEN 'Youth'
+    WHEN u.age < 40 THEN 'Early_Adulthood'
+    WHEN u.age < 60 THEN 'Middle_Adulthood'
+    WHEN u.age < 75 THEN 'Young_Old'
+    ELSE 'Old_Old'
+  END AS age_group,
+  u.country,
+  u.gender,
+  COUNT(CASE WHEN o.shipped_at IS NULL THEN 1 END) * 1.0 / COUNT(*) AS cancellation_rate
+FROM `bigquery-public-data.thelook_ecommerce.users` u
+JOIN `bigquery-public-data.thelook_ecommerce.orders` o ON u.id = o.user_id
+GROUP BY 1, 2, 3
+ORDER BY cancellation_rate DESC;   
+```
+
+## ⚠️ Model Limitations
+
+While a logistic regression (via GLM) is appropriate for modeling cancellation probability, the current results are unreliable due to data distortions — particularly extreme coefficient estimates like Austria's (–19.9), which suggest quasi-complete separation from sparse or zero-event data. These issues invalidate standard errors and p-values, making inference misleading. This highlights the need for diagnostic checks or Consider collapsing categories (e.g., group low-sample countries) or using regularization methods before deploying such models in production.
+
+## ✅ Key Takeaways
+
+- Statistical testing moves beyond descriptive stats — it validates whether observed differences are real or random. 
+- Age has more influence than gender on cancellation behavior.
+- Regional trends require localized strategies, especially in high-cancel regions like China.
+
+As we move forward, the next chapter — [Chapter 4.2: Customer Segmentation in Practice]() — will build on this foundation by applying clustering techniques to group users based on behavior, enabling personalized marketing strategies grounded in data.
+
+
+    - [📣 Explore the full dashboard](https://public.tableau.com/app/profile/manuel.hernandez.zemljic/viz/SCM7/InventoryDashboard)
+    - [🔗 View code on Colab](https://colab.research.google.com/drive/10qF2NcTlDrCySDnK1eLzdup3RXVvwU39?usp=sharing)

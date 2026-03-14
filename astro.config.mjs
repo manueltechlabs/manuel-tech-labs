@@ -5,6 +5,7 @@ import netlify from '@astrojs/netlify';
 import { remarkReadingTime } from './src/shared/utils/remark-reading-time.mjs';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import react from '@astrojs/react';
 
 export default defineConfig({
   site: 'https://jsdev.space',
@@ -15,6 +16,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap(),
+    react(),
   ],
   adapter: netlify({
     imageCDN: false
