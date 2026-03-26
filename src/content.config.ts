@@ -48,8 +48,8 @@ const projects = defineCollection({
   }),
 });
 
-
-
 export const collections = {
   posts, projects,
 };
+
+

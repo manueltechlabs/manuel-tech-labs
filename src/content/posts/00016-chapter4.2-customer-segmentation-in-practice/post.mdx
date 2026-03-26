@@ -1,0 +1,231 @@
+---
+title: "Chapter 4.2 Clustering in Action: Product & Customer from TheLook"
+slug: customer-segmentation-in-practice
+heading: "Clustering in Action: Product & Customer Insights from TheLook"
+image: ./images/eUMty50n.jpg
+permalink: customer-segmentation-in-practice
+date: 2026-03-26
+author: Manuel
+category: data-science
+type: post
+tags: ['customer-segmentation', 'product-analysis', 'k-means', 'clustering', 'ecommerce-analytics']
+desc: "How K-Means, DBSCAN & Hierarchical clustering reveal hidden patterns in customer behavior and product performance. Full analysis with Python & SQL."
+---
+import ScatterChart from '@/components/ScatterChart';
+
+import ClusterChart from '@/components/ClusterChart';
+
+# 📊 Chapter 4.2: Clustering in Action: Product & Customer Insights from TheLook
+
+Welcome back to our eCommerce Analytics Series!  👋 In the [previous chapter](/posts/how-age-gender-and-location-influence-customer-behavior/), we decoded how age, gender, and location influence order cancellations—revealing key behavioral patterns that impact revenue. Now, we shift from risk to opportunity: how do customers and products behave once they’re engaged?
+
+In this post, we apply clustering techniques to two key business aspects:
+
+- Product performance: Sales volume & profit margin
+- Customer behavior: Order frequency & average order value (AOV) 
+
+We’ll compare K-Means, DBSCAN, and Hierarchical clustering across both, showing how to choose the right method for each use case.
+
+## 🧩 The Data Story: Before → Change → Reason → Impact
+
+ 🔹 Before: One-Size-Fits-All Strategy
+Products treated equally in promotions
+Customers targeted with generic campaigns
+No segmentation based on behavior 
+
+ 🔹 Change: Machine Learning Segmentation
+We applied clustering to reveal natural groupings in both datasets. 
+
+ 🔹 Reason: Data-Driven Insights
+93.8% of users buy only once a year
+Profit margins vary widely across low- and high-sales items
+Clustering exposes hidden patterns that averages hide
+
+ 🔹 Impact: Targeted Actions
+Optimize pricing and marketing by segment
+Increase long time value (LTV) through personalized engagement
+Improve inventory and campaign efficiency
+
+## 📊 Clustering Evaluation: Two business perspectives, One Framework
+
+| Algorithm | Products (Silhouette) | Customers (Silhouette) |
+|---------|------------------------|-------------------------|
+| **K-Means** | 0.472 | **0.786** |
+| **DBSCAN** | 0.780 (misleading) | 0.778 |
+| **Hierarchical** | 0.457 | **0.786** |
+
+Despite similar performance scores, the interpretability and business alignment differ significantly.
+
+## 🏷️ Product Clustering: 3 Meaningful Segments
+
+### 🔍 Method
+
+- Features: total_sales, margin_profit
+- Optimal clusters: 3 (via elbow & silhouette)
+- Chosen algorithm: K-Means
+
+### Product Clustering input query
+
+```sql
+SELECT 
+  oi.product_id,
+  SUM(oi.sale_price) AS total_sales,
+  SUM(oi.sale_price - p.cost) / SUM(oi.sale_price) AS margin_profit
+FROM `bigquery-public-data.thelook_ecommerce.order_items` AS oi
+JOIN `bigquery-public-data.thelook_ecommerce.products` AS p 
+  ON oi.product_id = p.id
+WHERE oi.status = 'Complete'
+GROUP BY 1
+```
+### Optimal Cluster Selection with Elbow Method & Silhouette Score
+
+```python
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+import matplotlib.pyplot as plt
+
+inertias, silhouette_scores = [], []
+for k in range(2, 11):
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(product_clustering_scaled)
+    inertias.append(kmeans.inertia_)
+    silhouette_scores.append(silhouette_score(product_clustering_scaled, kmeans.labels_))
+
+# Plot both metrics
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+ax1.plot(range(2, 11), inertias, marker='o')
+ax1.set_title('Elbow Method')
+ax1.set_xlabel('Clusters')
+ax1.set_ylabel('Inertia')
+
+ax2.plot(range(2, 11), silhouette_scores, marker='o', color='g')
+ax2.set_title('Silhouette Score')
+ax2.set_xlabel('Clusters')
+ax2.set_ylabel('Score')
+plt.show()
+```
+## Plots of elbow method and siouluette score:
+
+<ScatterChart
+  csvUrl="/data/product_elbow_method.csv"
+  chartTitle="Elbow Method"
+  xField="k"
+  yField="inertia"
+  xName="Clusters"
+  yName="Inertia"
+  charType="line"
+  client:only="react"
+/>
+
+<ScatterChart
+  csvUrl="/data/product_silhouette_score.csv"
+  chartTitle="Silhouette Score"
+  xField="k"
+  yField="silhouette_score"
+  xName="Clusters"
+  yName="Score"
+  charType="line"
+  client:only="react"
+/>
+
+### 📈 Results
+
+So we chose K-Means—not because it had the highest score, but because it delivered balanced, interpretable segments that make sense in a business context:
+
+- Low-Margin, Low-Sales → Re-evaluate or bundle
+- High-Margin, Low-Sales → Boost visibility & marketing
+- High-Sales (Mixed Margin) → Optimize pricing & inventory 
+
+  💡 Why not DBSCAN? High score (0.78) was misleading—most points in one cluster.
+
+```python
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+kmeans = KMeans(n_clusters=3, random_state=42)
+labels = kmeans.fit_predict(product_clustering_scaled)
+
+plt.scatter(
+    product_clustering['margin_profit'],
+    product_clustering['total_sales'],
+    c=labels,
+    cmap='viridis',
+    alpha=0.6
+)
+plt.xlabel('Profit Margin')
+plt.ylabel('Total Sales')
+plt.title('Product Clusters (K-Means)')
+plt.colorbar(label='Cluster')
+plt.show()
+```
+
+<ClusterChart
+  csvUrl="/data/product_segments.csv"
+  chartTitle="Product Clusters"
+  xField="margin_profit"
+  yField="total_sales"
+  xName='Margin Profit'
+  yName='Total Sales'
+  client:only="react"
+/> 
+
+## 👥 Customer Clustering: 2 Clear Archetypes
+
+🔍 Method
+
+- Features: yearly_order_frequency, average_order_value
+- Optimal clusters: 2 (strong consensus)
+- Chosen algorithm: K-Means
+
+### Customer Segmentation Input Query
+
+Computes average order value per customer:
+
+```sql
+WITH order_value AS (
+  SELECT
+    o.user_id,
+    o.order_id,
+    SUM(oi.sale_price) AS total_order_value
+  FROM `bigquery-public-data.thelook_ecommerce.orders` AS o
+  JOIN `bigquery-public-data.thelook_ecommerce.order_items` AS oi 
+    ON o.order_id = oi.order_id
+  WHERE o.delivered_at IS NOT NULL
+  GROUP BY 1, 2
+)
+SELECT 
+  user_id, 
+  AVG(total_order_value) AS average_order_value
+FROM order_value 
+GROUP BY user_id
+```
+
+### 📈 Results
+
+Using the same rigorous approach—elbow method, silhouette analysis, and cross-algorithm validation—we found 2 clear customer archetypes:
+
+- Occasional Big Spenders → Low frequency, high AOV → Strategy: Re-engage with personalized offers
+- Frequent Low Spenders → High frequency, low AOV → Strategy: Upsell with bundles or loyalty rewards
+
+<ClusterChart
+  csvUrl="/data/customer_segments.csv"
+  chartTitle="Customer Clusters"
+  xField="yearly_order_frequency_jittered"
+  yField="average_order_value"
+  xName='Yearly Order Frequency'
+  yName='Average Order Value'
+  client:only="react"
+/>  
+
+###🚀 Business Impact
+- Products: Focus marketing on high-margin, low-sales items; optimize pricing on high-volume SKUs
+- Customers: Convert one-time buyers into loyalists; increase AOV in frequent shoppers
+
+  🔮 Next Up: Mapping the Customer Journey
+
+In Chapter 4.3, we’ll use Markov Chains to attribute conversions across marketing channels—revealing which touchpoints actually drive sales.
+
+
+    - [📣 Explore the full dashboard](https://public.tableau.com/app/profile/manuel.hernandez.zemljic/viz/SCM7/InventoryDashboard)
+    - [🔗 View code on Colab](https://colab.research.google.com/drive/10qF2NcTlDrCySDnK1eLzdup3RXVvwU39?usp=sharing)
+
