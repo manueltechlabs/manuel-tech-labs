@@ -7,7 +7,8 @@ const Graph = ({ chartTitle, nodes, edges }) => {
     const myChart = echarts.init(chartDom);
 
     const option = {
-      title: {text: chartTitle, left: 'center'}, // or 'left', 'right',
+      grid: { top: '30%' },
+      title: {text: chartTitle, left: 'center', top: '5%'}, // or 'left', 'right',
       tooltip: {
         formatter: (params) =>
           params.dataType === 'edge'
@@ -17,21 +18,21 @@ const Graph = ({ chartTitle, nodes, edges }) => {
       series: [
         {
           type: 'graph',
+          roam: false,
           layout: 'force',
           force: { repulsion: 1800, gravity: 0.1, edgeLength: 150, layoutAnimation: true },
           data: nodes.map(n => ({ ...n, symbolSize: 50, label: { show: true } })),
           edges: edges.map(e => ({
             ...e,
             lineStyle: { width: e.value ? e.value * 10 : 2 },
-            label: { show: !!e.value, formatter: e.value?.toFixed(3) }
           })),
-          labelLayout: {            
-            hideOverlap: true,    // Hide overlapping labels
-            moveOverlap: 'shiftY' // Shift labels to avoid clash
+          edgeLabel: {
+            show: true,
+            formatter :(params) =>params.data.value?.toFixed(3)
           },
+
           edgeSymbol: ['none', 'arrow'],
-          edgeSymbolSize: 15,
-          roam: false
+          edgeSymbolSize: 15
         }
       ]
     };
