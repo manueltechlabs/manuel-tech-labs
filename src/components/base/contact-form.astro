@@ -1,8 +1,10 @@
 ---
 import Button from './button.astro';
+export const prerender = true;
 ---
 
 <form
+  name="contact"
   class='contact-form'
   action='/thanks'
   method='post'
