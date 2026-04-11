@@ -1,5 +1,5 @@
 ---
-title: 'Java-Powered Dynamic Blog with Spring Boot & AWS'
+title: 'Production-Ready Blogging Platform (Spring Boot, AWS, Docker)'
 slug: java-spring-boot-blog-aws
 permalink: java-spring-boot-blog-aws
 desc: 'A Java Spring Boot blog with secure login, role-based access, and rich text editing, hosted on AWS EC2 via Docker.'
@@ -8,10 +8,10 @@ git: https://github.com/manueltechlabs/java-blog-project
 category: 'full-stack-web-development'
 tags: ['spring-boot', 'java', 'mysql', 'thymeleaf', 'aws-ec2', 'docker', 'bootstrap', 'mvc', 'spring-security', 'blog-application', 'responsive-design']
 date: 2025-10-26
-featuredAt: 2025-10-26
+featuredAt: 2026-03-28
 image: ./images/website.png
 ---
-# Java Blog Project: Full-Stack Portfolio Website with Dynamic Blog Functionality
+# Production-Ready Blogging Platform (Spring Boot, AWS, Docker)
 
 ## 🌐 Live Demo
 [View Live Project](https://bytebounty.com) 
@@ -20,11 +20,11 @@ image: ./images/website.png
 [GitHub - Java Blog Project](https://github.com/manueltechlabs/java-blog-project)
 
 ## Overview
-This project showcases a professional portfolio website integrated with a **fully dynamic blog system** built using modern Java enterprise technologies. While the main site (Home, About, Skills, Portfolio, Contact) provides a static yet responsive presentation of my work, the blog functions as a **full CRUD web application**, enabling content creation, user interaction, and secure administration.
+Designed and deployed a full-stack content platform with secure authentication, role-based access control, and cloud-native deployment.
 
-The backend is powered by **Spring Boot** with **JPA/Hibernate** for ORM, **MySQL** for data persistence, and **Spring Security** for robust authentication and role-based authorization. The frontend uses **Thymeleaf** for server-side rendering, **Bootstrap 5** for responsive design, and enhanced UX tools like **Summernote (WYSIWYG editor)**, **Prism.js (syntax highlighting)**, and **jQuery**.
+Built with Spring Boot and containerized using Docker, the system includes user management, content workflows, and production-grade security practices (Spring Security, password handling, CSRF protection).
 
-Deployment is containerized using **Docker** and hosted on **AWS EC2**, ensuring scalability and environment consistency.
+Deployed on AWS EC2 with environment-based configuration and secure secret management.
 
 ---
 
@@ -74,6 +74,67 @@ Deployment is containerized using **Docker** and hosted on **AWS EC2**, ensuring
 
 ## 🏗️ Architecture & Technologies
 
+```mermaid
+graph LR
+  subgraph users["Users"]
+    admin["Admin / Editor"]
+    guest["Guest Visitor"]
+    subscriber["Registered User"]
+  end
+
+  subgraph frontend["Frontend"]
+    thymeleaf["Thymeleaf Templates"]
+    bootstrap["Bootstrap 5"]
+    js["JavaScript/jQuery"]
+    summernote["Summernote Editor"]
+    prism["Prism.js"]
+  end
+
+  subgraph backend["Backend - Spring Boot"]
+    springboot["Spring Boot"]
+    mvc["Spring MVC"]
+    jpa["Spring Data JPA"]
+    security["Spring Security"]
+    mail["JavaMail (Future)"]
+  end
+
+  subgraph data["Data Layer"]
+    mysql["MySQL"]
+    hibernate["Hibernate ORM"]
+  end
+
+  subgraph devops["DevOps & Deployment"]
+    docker["Docker"]
+    aws["AWS EC2"]
+    secrets["Docker Secrets"]
+  end
+
+  users -->|"HTTP/S"| frontend
+  frontend -->|"Server-side Render"| thymeleaf
+  thymeleaf -->|"REST/API Calls"| springboot
+
+  springboot -->|"Processes Requests"| mvc
+  mvc -->|"CRUD Operations"| jpa
+  jpa -->|"Persists Data"| hibernate
+  hibernate -->|"Writes to DB"| mysql
+
+  security -->|"AuthN/AuthZ"| mysql
+  security -->|"Manages Sessions"| frontend
+  security -->|"Role Hierarchy"| admin
+  security -->|"Password Reset"| subscriber
+
+  summernote -->|"Image Upload"| docker
+  docker -->|"Secure Config"| secrets
+  docker -->|"Hosted On"| aws
+
+  mail -->|"Future: Email Alerts"| subscriber
+  mail -->|"Comment Notifications"| admin
+
+  style admin fill:#f96,stroke:#333
+  style guest fill:#ccc,stroke:#333
+  style subscriber fill:#6cf,stroke:#333     
+```
+
 ### 🖥️ Frontend
 | Technology       | Purpose |
 |------------------|--------|
@@ -82,6 +143,7 @@ Deployment is containerized using **Docker** and hosted on **AWS EC2**, ensuring
 | JavaScript/jQuery| DOM manipulation & interactivity |
 | Summernote       | Rich text editor |
 | Prism.js         | Code syntax highlighting |
+
 
 ### ⚙️ Backend
 | Technology         | Purpose |

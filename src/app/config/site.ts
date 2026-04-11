@@ -1,10 +1,10 @@
 export const siteConfig = {
-  title: `Full-Stack Supply Chain Engineer & Spring Boot Developer`,
-  shortTitle: `Spring Boot Developer`,
+  title: `Data Engineer & Backend Developer (Supply Chain Systems)`,
+  shortTitle: `Data Engineer & Backend Developer`,
   siteUrl: `https://manueltechlabs.com`,
   //twitterUsername: `@jsdevspace`,
   image: '/icon.png',
-  description: `Building intelligent, data-driven systems for manufacturing and SCM—leveraging Spring Boot, Python, and cloud technologies to deliver scalable backend solutions with a competitive edge in analytics and process optimization.`,
+  description: `I build data-driven systems that transform raw business data into actionable insights, with experience in ERP systems, KPI design, and backend development.`,
   navigation: [
     { name: 'Home', path: '/' },
     { name: 'Projects', path: '/projects' },
@@ -29,39 +29,39 @@ export const siteConfig = {
     linkedin: 'https://www.linkedin.com/in/manueltechlabs',
   },
   postsPerPage: 15,
-  mainHeadTitle: 'Full-Stack Supply Chain Engineer & Spring Boot Developer',
-  mainHeadDescription: ['I hack processes using technology to build better, more efficient solutions', 'Building intelligent, data-driven systems for manufacturing and SCM—leveraging Spring Boot, Python, and cloud technologies to deliver scalable back end solutions with a competitive edge in analytics and process optimization.'],
+  mainHeadTitle: 'Data Engineer & Backend Developer (Supply Chain Systems)',
+  mainHeadDescription: ['I build data-driven systems that transform raw business data into actionable insights, with experience in ERP systems, KPI design, and backend development.'],
   icons: {
     chevronLeft: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>`,
     chevronRight: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`,
     moreHorizontal: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`
   },
+  experienceTitle: 'Real Experience',
+  experienceDescription: ['Built and maintained ERP reporting systems, KPI dashboards, and financial analytics tools using SQL and PHP, including migration to SAP B1 and HANA.'],
   footerTextParagraphOne:
     'Engineered for performance, scalability, and impact.',
-  skillsTitle: "What I Do",
-  skillsHeader: "I design and optimize end-to-end manufacturing and supply chain systems by bridging Industrial Engineering, Data Science, and Full-Stack Development.",
-  skillsHeaderTwo: "My expertise spans:",
+  skillsTitle: "My Skills",
   skills: [
     {
-      title: 'Industrial & Supply Chain Engineering',
-      description: 'Process modeling, operations research, KPI development, and physical system design.',
+      title: 'Data',
+      description: 'SQL (MSSQL, BigQuery), Python (pandas), Tableau',
       icon: '/icons/WhatIDo/settings-cogwheel-svgrepo-com.svg',
 
     },
     {
-      title: 'Data Science & Analytics',
-      description: 'Machine Learning (Python, R, PyTorch), SQL (MSSQL, HanaSQL), data visualization (Tableau), and statistical analysis.',
+      title: 'Backend',
+      description: 'Java, Spring Boot, REST APIs, MySQL',
       icon: '/icons/WhatIDo/brain-svgrepo-com.svg',
 
     },
     {
-      title: 'Full-Stack Development',
-      description: 'Java (Spring Boot), React, API Design, Databases (MySQL), CI/CD, and Cloud (AWS, Docker).',
+      title: 'Tools',
+      description: 'Docker, AWS, Git, CI/CD',
       icon: '/icons/WhatIDo/code-svgrepo-com.svg',
 
     },
   ],
-  projectsTitle: 'Featured Projects:',
+  projectsTitle: 'Featured Systems:',
   featuredPostsTile: 'Featured Posts:',
   lastPostsTile: 'Last Posts:',
 } as const;

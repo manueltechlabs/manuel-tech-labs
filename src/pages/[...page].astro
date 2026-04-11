@@ -134,14 +134,7 @@ const useBorderlessTitle = false;
     {
       page.currentPage === 1 &&
         <HeadingBlock
-          title={siteConfig.skillsTitle}
-          descriptionItems={[siteConfig.skillsHeader]}
-        />
-    }
-    {
-      page.currentPage === 1 &&
-        <HeadingBlock
-          headingTwo={siteConfig.skillsHeaderTwo}
+          title={siteConfig.skillsTitle}          
         />
     }
     {
@@ -169,12 +162,20 @@ const useBorderlessTitle = false;
       page.currentPage === 1 && <FeaturedPosts posts={myFeatPosts} />
     }
     {
+      page.currentPage === 1 &&
+        <HeadingBlock
+          title={siteConfig.experienceTitle}
+
+          descriptionItems={siteConfig.experienceDescription}
+        />
+    }
+    {
       page.currentPage === 1 && (
         <HeadingBlock
           title={siteConfig.lastPostsTile}
         />
       )
-    }
+    } 
     {
       <Posts posts={page.data} />
     }

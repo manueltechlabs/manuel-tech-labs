@@ -6,6 +6,7 @@ import { remarkReadingTime } from './src/shared/utils/remark-reading-time.mjs';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import react from '@astrojs/react';
+import rehypeMermaid from 'rehype-mermaid';
 
 export default defineConfig({
   site: 'https://jsdev.space',
@@ -23,8 +24,12 @@ export default defineConfig({
   }),
 
   markdown: {
+    syntaxHighlight: {
+      type: 'shiki',
+      excludeLangs: ['mermaid'], // Prevents syntax highlighting on mermaid blocks
+    },
     remarkPlugins: [remarkReadingTime, remarkMath],
-    rehypePlugins: [rehypeKatex],
+    rehypePlugins: [rehypeKatex, rehypeMermaid],
     shikiConfig: {
       theme: 'github-dark',
       wrap: true
