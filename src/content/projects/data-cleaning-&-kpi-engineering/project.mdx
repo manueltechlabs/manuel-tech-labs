@@ -1,0 +1,172 @@
+---
+title: 'Data Cleaning & KPI Engineering'
+slug: 'data-cleaning-&-kpi-engineering'
+permalink: 'data-cleaning-&-kpi-engineering'
+desc: 'Transforming raw eCommerce data into reliable business KPIs using SQL and BigQuery.'
+url: 'https://public.tableau.com/views/SCM7/SalesDashboard?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link'
+category: 'data-science'
+tags: ['sql', 'bigquery', 'data-analytics', 'kpi-design']
+date: 2025-10-26
+featuredAt: 2026-03-27
+image: ./images/vheer-image-1775932873369.jpg
+---
+
+# 🔧 Data Cleaning & KPI Engineering  
+### Turning Raw Data into Decision-Ready Metrics
+
+## 🧩 The Problem
+
+Before any meaningful analysis can happen, data needs to be **trusted**.
+
+Working with the TheLook eCommerce dataset, the goal was to:
+- Validate data quality  
+- Build reliable KPI definitions  
+- Translate raw tables into business-ready metrics  
+
+This project focuses on **bridging the gap between raw data and decision-making**.
+
+---
+
+## 🧹 Step 1: Establishing Data Trust
+
+The first priority was ensuring the dataset was **clean and usable**.
+
+### What I checked:
+- Missing values in critical fields  
+- Duplicate records  
+- Structural consistency across tables  
+
+### Key Findings:
+- No missing values in core transactional fields (orders, costs, categories)  
+- Only **2 missing product names** — negligible impact  
+- No duplicate product IDs  
+
+### Why this matters:
+Even small data quality issues can distort KPIs like:
+- Revenue  
+- Conversion rates  
+- Inventory performance  
+
+This step ensured all downstream metrics were built on **reliable foundations**.
+
+---
+
+## 💰 Step 2: Building Financial KPIs
+
+Once the data was validated, I shifted to **core business metrics**.
+
+### Metrics Engineered:
+- **Total Sales**
+- **Gross Profit**
+- **Profit Margin**
+
+### Key Results:
+- Total Sales: **$2.71M**  
+- Gross Profit: **$1.41M**  
+- Margin: **~52%**
+
+### Insight:
+The business retains over half of its revenue as gross profit — a strong signal of **effective pricing and cost control**.
+
+---
+
+## 🚚 Step 3: Measuring Customer Experience
+
+Customer experience is a major driver of retention in eCommerce.
+
+I built KPIs focused on **logistics and fulfillment performance**:
+
+### Metrics:
+- Average Delivery Time  
+- Return Rate  
+- On-Time Delivery (OTD)  
+- In-Full Delivery  
+- OTIF (On-Time In-Full)  
+
+### Key Results:
+- Average Delivery Time: **~3.5 days**  
+- Return Rate: **15.5%**  
+- OTIF: **22.2%**
+
+### Insight:
+While delivery speed is reasonable, the **low OTIF** suggests gaps in:
+- Fulfillment consistency  
+- Order completeness  
+- Logistics coordination  
+
+This is a critical area for improvement.
+
+---
+
+## 📊 Step 4: Marketing Funnel KPIs
+
+To understand customer behavior, I engineered **conversion metrics from event data**.
+
+### Metrics:
+- Session-based conversion rate  
+- Event-based conversion rate  
+- Cart rate  
+- Product view rate  
+
+### Key Results:
+- Session Conversion Rate: **26.6%**  
+- Event Conversion Rate: **7.5%**  
+- Cart Rate: **63.3%**
+
+### Insight:
+A high cart interaction rate suggests strong intent, but the drop-off before purchase indicates **friction in the checkout process**.
+
+---
+
+## 📦 Step 5: Inventory & Supply Chain Efficiency
+
+Finally, I analyzed operational efficiency through inventory and fulfillment KPIs.
+
+### Metrics:
+- Inventory Turnover  
+- Inventory Level  
+- Line Fill Rate  
+- Case Fill Rate  
+- Service Level  
+
+### Key Results:
+- Inventory Turnover: **0.30**  
+- Inventory Level: **$888K**  
+- Service Level: **76%**
+
+### Insight:
+- Very low inventory turnover suggests **overstocking or weak demand**  
+- Fulfillment metrics (~76%) indicate **incomplete or delayed shipments**  
+
+This highlights inefficiencies in both **inventory management and order fulfillment**.
+
+---
+
+## 🧠 Key Takeaways
+
+This project demonstrates how to:
+
+- Validate and clean real-world datasets  
+- Translate business concepts into SQL logic  
+- Build reusable KPI definitions  
+- Identify operational and financial inefficiencies  
+
+Most importantly, it shows how raw data can be transformed into **actionable insights**.
+
+---
+
+## 🔗 Technical Deep Dive
+
+- 📓 [Full SQL & exploration:](https://colab.research.google.com/drive/10qF2NcTlDrCySDnK1eLzdup3RXVvwU39?usp=sharing#scrollTo=t7G9pEiSDfM0&uniqifier=3)
+- 📊 [Dashboard](https://public.tableau.com/views/SCM7/SalesDashboard?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
+
+---
+
+## 🚀 What I’d Do Next
+
+- Segment KPIs by product category  
+- Track trends over time  
+- Build a dashboard for stakeholder reporting  
+- Investigate root causes behind low OTIF and inventory turnover  
+
+---
