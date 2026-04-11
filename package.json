@@ -14,7 +14,8 @@
     "lint:fix": "eslint . --ext .js,.ts,.astro --fix",
     "prettier": "prettier --write \"src/**/*.{js,ts,astro,json,md}\"",
     "prettier:check": "prettier --check .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "postinstall": "npx playwright-core install chromium"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",
