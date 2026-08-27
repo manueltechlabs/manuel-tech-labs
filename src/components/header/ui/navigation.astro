@@ -72,11 +72,7 @@ const currentPath = Astro.url.pathname;
     </div>
 
     <nav class='mobile-nav'>
-      <a
-        href='/categories'
-        class={`mobile-nav__link ${isActiveLink('/categories/', currentPath) ? 'mobile-nav__link--active' : ''}`}>
-        Categories
-      </a>
+
       {
         navigation.map(navLink => (
           <a
